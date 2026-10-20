@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<!-- FOOTER -->
+<footer class="mt-auto border-top" style="background:#111;color:rgba(255,255,255,.6);">
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5 class="fw-bold text-white text-uppercase mb-3"
+            style="font-family:'Cinzel',serif;letter-spacing:.06em;">
+          MACHO<span style="color:#c9a84c;">MEN</span>
+        </h5>
+        <p class="small opacity-75">
+          Moda masculina premium. Casacas de cuero, calzado y accesorios de primera calidad.
+        </p>
+        <div class="d-flex gap-3 mt-3">
+          <i class="fa-brands fa-instagram fa-lg" style="color:#c9a84c;cursor:pointer;"></i>
+          <i class="fa-brands fa-facebook fa-lg" style="color:#c9a84c;cursor:pointer;"></i>
+          <i class="fa-brands fa-whatsapp fa-lg" style="color:#c9a84c;cursor:pointer;"></i>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <h6 class="fw-bold text-white text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.1em;">Tienda</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a routerLink="/catalogo" class="text-decoration-none opacity-75" style="color:inherit;">Catálogo</a></li>
+          <li class="mb-2"><a routerLink="/catalogo" class="text-decoration-none opacity-75" style="color:inherit;">Casacas</a></li>
+          <li class="mb-2"><a routerLink="/catalogo" class="text-decoration-none opacity-75" style="color:inherit;">Zapatos</a></li>
+          <li class="mb-2"><a routerLink="/catalogo" class="text-decoration-none opacity-75" style="color:inherit;">Accesorios</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h6 class="fw-bold text-white text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.1em;">Mi Cuenta</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a routerLink="/login" class="text-decoration-none opacity-75" style="color:inherit;">Ingresar</a></li>
+          <li class="mb-2"><a routerLink="/registro" class="text-decoration-none opacity-75" style="color:inherit;">Registrarse</a></li>
+          <li class="mb-2"><a routerLink="/pedidos" class="text-decoration-none opacity-75" style="color:inherit;">Mis Pedidos</a></li>
+          <li class="mb-2"><a routerLink="/perfil" class="text-decoration-none opacity-75" style="color:inherit;">Mi Perfil</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="fw-bold text-white text-uppercase mb-3" style="font-size:.75rem;letter-spacing:.1em;">Contacto</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-phone fa-sm" style="color:#c9a84c;width:16px;"></i>
+            <span class="opacity-75">+51 999 000 111</span>
+          </li>
+          <li class="mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-envelope fa-sm" style="color:#c9a84c;width:16px;"></i>
+            <span class="opacity-75">contacto&#64;machomen.com</span>
+          </li>
+          <li class="mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-location-dot fa-sm" style="color:#c9a84c;width:16px;"></i>
+            <span class="opacity-75">Lima, Perú</span>
+          </li>
+        </ul>
+        <div class="mt-3 d-flex gap-2 small">
+          <span class="badge px-2 py-1" style="background:rgba(201,168,76,.15);color:#c9a84c;font-size:.62rem;">
+            <i class="fa-solid fa-truck me-1"></i>Envío gratis &gt; S/250
+          </span>
+          <span class="badge px-2 py-1" style="background:rgba(201,168,76,.15);color:#c9a84c;font-size:.62rem;">
+            <i class="fa-solid fa-shield-halved me-1"></i>Pago seguro
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="border-top py-3" style="border-color:rgba(255,255,255,.08)!important;">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <p class="small mb-0 opacity-50">© 2026 MachoMen. Todos los derechos reservados.</p>
+      <p class="small mb-0 opacity-50">Hecho con ❤ en Lima, Perú</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,190 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 class="fw-bold mb-0"><i class="fa-solid fa-user-tie me-2"></i>Gestión de Vendedores</h5>
+    <small class="text-muted">Crea y administra cuentas del equipo de ventas.</small>
+  </div>
+  <button (click)="abrirForm()" class="btn btn-dark rounded-0 px-4 fw-bold shadow-sm">
+    <i class="fa-solid fa-user-plus me-2"></i>Nuevo Vendedor
+  </button>
+</div>
+
+<div class="card border-0 shadow-sm rounded-0">
+  <div class="card-body p-0">
+    <div *ngIf="cargando" class="text-center py-5">
+      <div class="spinner-border text-dark" style="width:2.5rem;height:2.5rem;"></div>
+      <p class="text-muted small mt-3">Cargando vendedores...</p>
+    </div>
+    <div *ngIf="!cargando && vendedores.length===0" class="text-center py-5">
+      <i class="fa-solid fa-users-slash fs-1 text-muted opacity-25 d-block mb-3"></i>
+      <p class="text-muted">No hay vendedores registrados.</p>
+      <button (click)="abrirForm()" class="btn btn-dark btn-sm rounded-0">Crear primer vendedor</button>
+    </div>
+    <div class="table-responsive" *ngIf="!cargando && vendedores.length>0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-secondary small text-uppercase" style="font-size:.65rem;letter-spacing:.05em;">
+          <tr>
+            <th class="ps-4">ID</th><th>Nombre</th><th>DNI</th><th>Correo</th>
+            <th>Celular</th><th class="text-center">Estado</th><th class="text-center" style="min-width:160px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of vendedores" [style.opacity]="v.estado===0?'0.6':''">
+            <td class="ps-4 fw-bold text-muted">#{{ v.idusuario }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
+                     style="width:34px;height:34px;font-size:.75rem;flex-shrink:0;">
+                  {{ (v.nombres[0]||'')+(v.apellidos[0]||'') }}
+                </div>
+                <div>
+                  <span class="fw-bold d-block small">{{ v.nombres }} {{ v.apellidos }}</span>
+                  <small class="text-muted" style="font-size:.65rem;">Vendedor</small>
+                </div>
+              </div>
+            </td>
+            <td class="small">{{ v.dni }}</td>
+            <td class="small">{{ v.correo }}</td>
+            <td class="small text-muted">{{ v.celular || '—' }}</td>
+            <td class="text-center">
+              <div class="d-flex align-items-center justify-content-center gap-2">
+                <div style="position:relative;width:36px;height:20px;cursor:pointer;"
+                     (click)="cambiarEstado(v)">
+                  <div [style.background]="v.estado===1?'#22c55e':'#d1d5db'"
+                       style="width:36px;height:20px;border-radius:10px;transition:background .2s;">
+                    <div [style.transform]="v.estado===1?'translateX(16px)':'translateX(2px)'"
+                         style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+                  </div>
+                </div>
+                <span [style.color]="v.estado===1?'#15803d':'#9ca3af'" style="font-size:.72rem;font-weight:600;">
+                  {{ v.estado===1?'Activo':'Inactivo' }}
+                </span>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-1">
+                <button (click)="editarVendedor(v)"
+                        class="btn btn-outline-dark btn-sm rounded-0" style="font-size:.7rem;"
+                        title="Editar vendedor">
+                  <i class="fa-solid fa-pen-to-square me-1"></i>Editar
+                </button>
+                <button (click)="cambiarEstado(v)"
+                        [class]="v.estado===1?'btn btn-outline-danger btn-sm rounded-0':'btn btn-outline-success btn-sm rounded-0'"
+                        style="font-size:.7rem;">
+                  {{ v.estado===1?'Desactivar':'Activar' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal crear/editar vendedor -->
+<div *ngIf="mostrarForm"
+     class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+     style="background:rgba(0,0,0,.55);z-index:9999;">
+  <div class="bg-white rounded-0 shadow-lg" style="width:580px;max-height:94vh;overflow-y:auto;">
+
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-dark text-white">
+      <strong>
+        <i class="fa-solid me-2" [class.fa-user-plus]="!modoEdicion" [class.fa-pen-to-square]="modoEdicion"></i>
+        {{ modoEdicion ? 'Editar Vendedor' : 'Crear Cuenta de Vendedor' }}
+      </strong>
+      <button (click)="mostrarForm=false" [disabled]="guardando" class="btn btn-sm btn-outline-light rounded-0">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="p-4">
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Nombres *</label>
+          <input type="text" [(ngModel)]="nuevo.nombres" (blur)="validarCampo('nombres')"
+                 [class]="'form-control rounded-0 '+(errores['nombres']?'is-invalid':'border-secondary border-opacity-25')"
+                 placeholder="Nombres completos">
+          <div *ngIf="errores['nombres']" class="invalid-feedback">{{ errores['nombres'] }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Apellidos *</label>
+          <input type="text" [(ngModel)]="nuevo.apellidos" (blur)="validarCampo('apellidos')"
+                 [class]="'form-control rounded-0 '+(errores['apellidos']?'is-invalid':'border-secondary border-opacity-25')"
+                 placeholder="Apellidos completos">
+          <div *ngIf="errores['apellidos']" class="invalid-feedback">{{ errores['apellidos'] }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">DNI * <small class="text-muted">(8 dígitos)</small></label>
+          <input type="text" [(ngModel)]="nuevo.dni" maxlength="8" (blur)="validarCampo('dni')"
+                 [class]="'form-control rounded-0 '+(errores['dni']?'is-invalid':'border-secondary border-opacity-25')"
+                 placeholder="12345678">
+          <div *ngIf="errores['dni']" class="invalid-feedback">{{ errores['dni'] }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Celular</label>
+          <input type="text" [(ngModel)]="nuevo.celular" maxlength="15" (blur)="validarCampo('celular')"
+                 [class]="'form-control rounded-0 '+(errores['celular']?'is-invalid':'border-secondary border-opacity-25')"
+                 placeholder="987654321">
+          <div *ngIf="errores['celular']" class="invalid-feedback">{{ errores['celular'] }}</div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Correo *</label>
+          <input type="email" [(ngModel)]="nuevo.correo" (blur)="validarCampo('correo')"
+                 [class]="'form-control rounded-0 '+(errores['correo']?'is-invalid':'border-secondary border-opacity-25')"
+                 placeholder="vendedor@machomen.com" [readonly]="modoEdicion">
+          <div *ngIf="errores['correo']" class="invalid-feedback">{{ errores['correo'] }}</div>
+          <small *ngIf="modoEdicion" class="text-muted">El correo no se puede cambiar.</small>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">
+            Contraseña {{ modoEdicion ? '(dejar vacío para no cambiar)' : '* (mín. 6 caracteres)' }}
+          </label>
+          <div class="input-group">
+            <input [type]="verClave?'text':'password'" [(ngModel)]="nuevo.clave" (blur)="validarCampo('clave')"
+                   [class]="'form-control rounded-0 '+(errores['clave']?'is-invalid':'border-secondary border-opacity-25')"
+                   [placeholder]="modoEdicion?'Dejar vacío para no cambiar':'Contraseña segura'">
+            <button type="button" (click)="verClave=!verClave" class="btn btn-outline-secondary rounded-0">
+              <i [class]="verClave?'fa-solid fa-eye-slash':'fa-solid fa-eye'"></i>
+            </button>
+            <div *ngIf="errores['clave']" class="invalid-feedback d-block">{{ errores['clave'] }}</div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Dirección</label>
+          <input type="text" [(ngModel)]="nuevo.direccion"
+                 class="form-control rounded-0 border-secondary border-opacity-25"
+                 placeholder="Av. Example 123">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Distrito</label>
+          <select [(ngModel)]="nuevo.iddistrito" class="form-select rounded-0 border-secondary border-opacity-25">
+            <option [value]="0">-- Sin especificar --</option>
+            <option *ngFor="let d of distritos" [value]="d.iddistrito">{{ d.descripcion }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="alert alert-info rounded-0 mt-3 small border-0" style="background:#e8f4fd;">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        El vendedor accede con su correo y contraseña.
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end mt-3">
+        <button (click)="mostrarForm=false" [disabled]="guardando" class="btn btn-outline-secondary rounded-0 px-4">Cancelar</button>
+        <button (click)="guardar()" [disabled]="guardando" class="btn btn-dark rounded-0 px-4 fw-bold">
+          <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!guardando" class="fa-solid fa-save me-2"></i>
+          {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar Cambios' : 'Crear Vendedor') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

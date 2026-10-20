@@ -136,6 +136,7 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.angular
 
 # Vite files
 vite.config.js.timestamp-*
@@ -151,6 +152,7 @@ vite.config.ts.timestamp-*
 
 **/.settings/*
 **/.mvn/*
+**/.mvn2/*
 .classpath
 .project
 **/target/*

@@ -1,0 +1,269 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 class="fw-bold mb-0"><i class="fa-solid fa-users me-2"></i>Usuarios y Clientes</h5>
+    <small class="text-muted">Todos los usuarios registrados en la plataforma.</small>
+  </div>
+  <div class="d-flex gap-2">
+    <button (click)="abrirFormCliente()" class="btn btn-dark rounded-0 px-4 fw-bold shadow-sm">
+      <i class="fa-solid fa-user-plus me-2"></i>Nuevo Cliente
+    </button>
+    <button (click)="cargar()" class="btn btn-outline-dark rounded-0 btn-sm px-3" title="Actualizar lista">
+      <i class="fa-solid fa-arrows-rotate"></i>
+    </button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-3">
+    <div class="card border-0 bg-dark text-white rounded-0 p-3">
+      <div class="fw-bold fs-4">{{ usuarios.length }}</div>
+      <small class="opacity-75 text-uppercase" style="font-size:.62rem;">Total usuarios</small>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card border-0 rounded-0 p-3" style="background:#dbeafe;">
+      <div class="fw-bold fs-4" style="color:#1e293b;">{{ totalClientes }}</div>
+      <small style="font-size:.62rem;color:#1d4ed8;" class="text-uppercase">Clientes</small>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card border-0 rounded-0 p-3" style="background:#d1fae5;">
+      <div class="fw-bold fs-4" style="color:#1e293b;">{{ totalActivos }}</div>
+      <small style="font-size:.62rem;color:#065f46;" class="text-uppercase">Activos</small>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card border-0 rounded-0 p-3" style="background:#fee2e2;">
+      <div class="fw-bold fs-4" style="color:#1e293b;">{{ totalInactivos }}</div>
+      <small style="font-size:.62rem;color:#991b1b;" class="text-uppercase">Inactivos</small>
+    </div>
+  </div>
+</div>
+
+<!-- Error -->
+<div *ngIf="errorCarga" class="alert rounded-0 mb-3 d-flex align-items-center gap-3"
+     style="background:#fee2e2;border:1px solid #ef4444;color:#991b1b;">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <span>No se pudieron cargar los usuarios.</span>
+  <button (click)="cargar()" class="btn btn-sm ms-auto rounded-0"
+          style="background:#ef4444;color:#fff;font-size:.72rem;">Reintentar</button>
+</div>
+
+<!-- Filtros -->
+<div class="row g-2 mb-3">
+  <div class="col-md-7">
+    <div class="input-group">
+      <span class="input-group-text bg-white rounded-0 border-secondary border-opacity-25">
+        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+      </span>
+      <input type="text" [(ngModel)]="busqueda" (ngModelChange)="filtrar()"
+             class="form-control rounded-0 border-secondary border-opacity-25"
+             placeholder="Buscar por nombre, correo o DNI...">
+      <button *ngIf="busqueda" (click)="busqueda=''; filtrar()"
+              class="btn btn-outline-secondary rounded-0">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <select [(ngModel)]="filtroRol" (ngModelChange)="filtrar()"
+            class="form-select rounded-0 border-secondary border-opacity-25">
+      <option value="0">Todos los roles</option>
+      <option value="1">Administradores</option>
+      <option value="2">Clientes</option>
+      <option value="3">Vendedores</option>
+    </select>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card border-0 shadow-sm rounded-0">
+  <div class="card-body p-0">
+
+    <div *ngIf="cargando" class="text-center py-5">
+      <div class="spinner-border text-dark" style="width:2.5rem;height:2.5rem;"></div>
+      <p class="text-muted small mt-3">Cargando usuarios...</p>
+    </div>
+
+    <div *ngIf="!cargando && !errorCarga && filtrados.length === 0" class="text-center py-5">
+      <i class="fa-solid fa-users-slash fs-1 text-muted opacity-25 d-block mb-3"></i>
+      <p class="text-muted">No se encontraron usuarios con ese criterio.</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargando && filtrados.length > 0">
+      <table class="table table-hover align-middle mb-0" style="font-size:.83rem;">
+        <thead class="bg-light text-secondary small text-uppercase" style="font-size:.65rem;letter-spacing:.06em;">
+          <tr>
+            <th class="ps-4">ID</th>
+            <th>Usuario</th>
+            <th>DNI</th>
+            <th>Correo</th>
+            <th>Celular</th>
+            <th>Registro</th>
+            <th class="text-center">Rol</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center" style="min-width:120px;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filtrados" style="border-bottom:1px solid #f5f5f5;"
+              [style.opacity]="u.estado===0?'0.6':''">
+            <td class="ps-4 fw-bold text-muted">#{{ u.idusuario }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+                     [style.background]="u.rol===1?'#111':u.rol===3?'#92400e':'#1d4ed8'"
+                     style="width:34px;height:34px;font-size:.7rem;flex-shrink:0;">
+                  {{ (u.nombres[0]||'') + (u.apellidos[0]||'') }}
+                </div>
+                <div>
+                  <span class="fw-bold d-block small">{{ u.nombres }} {{ u.apellidos }}</span>
+                  <small class="text-muted" style="font-size:.65rem;">{{ u.direccion || '—' }}</small>
+                </div>
+              </div>
+            </td>
+            <td class="small">{{ u.dni }}</td>
+            <td class="small text-muted">{{ u.correo }}</td>
+            <td class="small text-muted">{{ u.celular || '—' }}</td>
+            <td class="small text-muted">{{ u.fecha_reg ? (u.fecha_reg | date:'dd/MM/yy') : '—' }}</td>
+            <td class="text-center">
+              <span class="badge rounded-0 px-2 {{ rolClass(u.rol) }}" style="font-size:.62rem;">
+                {{ rolLabel(u.rol) }}
+              </span>
+            </td>
+            <td class="text-center">
+              <!-- Toggle switch visual -->
+              <div class="d-flex align-items-center justify-content-center gap-2">
+                <div style="position:relative;width:36px;height:20px;">
+                  <div [style.background]="u.estado===1?'#22c55e':'#d1d5db'"
+                       style="width:36px;height:20px;border-radius:10px;transition:background .2s;cursor:pointer;"
+                       (click)="u.rol!==1 && cambiarEstado(u)">
+                    <div [style.transform]="u.estado===1?'translateX(16px)':'translateX(2px)'"
+                         style="width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+                  </div>
+                </div>
+                <span [style.color]="u.estado===1?'#15803d':'#9ca3af'" style="font-size:.7rem;font-weight:600;">
+                  {{ u.estado===1?'Activo':'Inactivo' }}
+                </span>
+              </div>
+            </td>
+            <td class="text-center">
+              <button *ngIf="u.rol !== 1"
+                      (click)="cambiarEstado(u)"
+                      [class]="u.estado===1
+                        ? 'btn btn-outline-danger btn-sm rounded-0'
+                        : 'btn btn-outline-success btn-sm rounded-0'"
+                      style="font-size:.7rem;min-width:90px;">
+                <i [class]="u.estado===1?'fa-solid fa-ban me-1':'fa-solid fa-circle-check me-1'"></i>
+                {{ u.estado===1 ? 'Desactivar' : 'Activar' }}
+              </button>
+              <span *ngIf="u.rol===1" class="text-muted small">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer bg-white border-top text-muted small px-4 py-2">
+    Mostrando {{ filtrados.length }} de {{ usuarios.length }} usuarios
+  </div>
+</div>
+
+<!-- Modal Crear Cliente -->
+<div *ngIf="mostrarForm"
+     class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+     style="background:rgba(0,0,0,.55);z-index:9999;">
+  <div class="bg-white rounded-0 shadow-lg" style="width:600px;max-height:92vh;overflow-y:auto;">
+
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-dark text-white">
+      <strong><i class="fa-solid fa-user-plus me-2"></i>Crear Cuenta de Cliente</strong>
+      <button (click)="mostrarForm=false" [disabled]="guardando"
+              class="btn btn-sm btn-outline-light rounded-0">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="p-4">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Nombres *</label>
+          <input type="text" [(ngModel)]="nuevoCliente.nombres"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="Nombres completos">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Apellidos *</label>
+          <input type="text" [(ngModel)]="nuevoCliente.apellidos"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="Apellidos completos">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">DNI * <small class="text-muted">(8 dígitos)</small></label>
+          <input type="text" [(ngModel)]="nuevoCliente.dni" maxlength="8"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="12345678">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Celular</label>
+          <input type="text" [(ngModel)]="nuevoCliente.celular" maxlength="12"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="987654321">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Correo Electrónico *</label>
+          <input type="email" [(ngModel)]="nuevoCliente.correo"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="cliente@correo.com">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Contraseña * <small class="text-muted">(mín. 6)</small></label>
+          <div class="input-group">
+            <input [type]="verClave?'text':'password'" [(ngModel)]="nuevoCliente.clave"
+                   class="form-control rounded-0 border-secondary border-opacity-25" placeholder="Contraseña">
+            <button type="button" (click)="verClave=!verClave" class="btn btn-outline-secondary rounded-0">
+              <i [class]="verClave?'fa-solid fa-eye-slash':'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Repetir Contraseña *</label>
+          <div class="input-group">
+            <input [type]="verClave2?'text':'password'" [(ngModel)]="nuevoCliente.clave2"
+                   [class.is-invalid]="nuevoCliente.clave2 && nuevoCliente.clave!==nuevoCliente.clave2"
+                   class="form-control rounded-0 border-secondary border-opacity-25" placeholder="Repetir">
+            <button type="button" (click)="verClave2=!verClave2" class="btn btn-outline-secondary rounded-0">
+              <i [class]="verClave2?'fa-solid fa-eye-slash':'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+          <small *ngIf="nuevoCliente.clave2 && nuevoCliente.clave!==nuevoCliente.clave2"
+                 class="text-danger">Las contraseñas no coinciden.</small>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Dirección</label>
+          <input type="text" [(ngModel)]="nuevoCliente.direccion"
+                 class="form-control rounded-0 border-secondary border-opacity-25" placeholder="Dirección completa">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-bold small text-secondary text-uppercase">Distrito</label>
+          <select [(ngModel)]="nuevoCliente.iddistrito"
+                  class="form-select rounded-0 border-secondary border-opacity-25">
+            <option [value]="0">-- Sin especificar --</option>
+            <option *ngFor="let d of distritos" [value]="d.iddistrito">{{ d.descripcion }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="alert alert-info rounded-0 mt-3 small border-0" style="background:#e8f4fd;">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        El cliente recibirá rol de <strong>Cliente</strong> y podrá comprar en la tienda.
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end mt-3">
+        <button (click)="mostrarForm=false" [disabled]="guardando"
+                class="btn btn-outline-secondary rounded-0 px-4">Cancelar</button>
+        <button (click)="guardarCliente()" [disabled]="guardando"
+                class="btn btn-dark rounded-0 px-4 fw-bold">
+          <span *ngIf="guardando" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!guardando" class="fa-solid fa-save me-2"></i>
+          {{ guardando ? 'Guardando...' : 'Crear Cliente' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

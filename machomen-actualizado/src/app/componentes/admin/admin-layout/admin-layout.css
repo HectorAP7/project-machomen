@@ -1,0 +1,122 @@
+/* ════ ADMIN LAYOUT MACHOMEN ════ */
+:host {
+  --gold: #c9a84c;
+  --gold-light: #e0c068;
+  display: block;
+}
+
+.mm-admin-wrap { display: flex; width: 100%; height: 100vh; overflow: hidden; }
+
+/* SIDEBAR */
+.mm-admin-sidebar {
+  width: 248px; min-width: 248px;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, #0d0d0d 0%, #161616 100%);
+  border-right: 1px solid rgba(201,168,76,.12);
+  z-index: 1000;
+}
+
+.mm-admin-brand { text-align: center; padding: 1.75rem 1.5rem 1.25rem; }
+.mm-admin-brand h4 {
+  font-family: 'Cinzel', serif; font-weight: 700;
+  color: #fff; letter-spacing: .05em; margin: 0; font-size: 1.4rem;
+}
+.mm-admin-brand h4 span { color: var(--gold); }
+.mm-admin-brand small {
+  display: block; margin-top: .35rem;
+  font-size: .58rem; color: #5a5a5a;
+  text-transform: uppercase; letter-spacing: .2em;
+}
+
+/* Stats */
+.mm-admin-stats {
+  display: flex; align-items: center;
+  margin: 0 1rem 1rem;
+  padding: .75rem;
+  background: rgba(201,168,76,.06);
+  border: 1px solid rgba(201,168,76,.12);
+}
+.mm-admin-stats > div { flex: 1; text-align: center; }
+.mm-stat-num { font-weight: 700; color: #fff; font-size: 1rem; }
+.mm-stat-lbl { font-size: .56rem; color: #777; text-transform: uppercase; letter-spacing: .08em; }
+.mm-stat-sep { width: 1px; align-self: stretch; background: rgba(255,255,255,.1); flex: 0 0 1px !important; }
+
+/* Nav */
+.mm-admin-nav {
+  list-style: none; padding: 0 .65rem; margin: 0;
+  flex: 1; display: flex; flex-direction: column; gap: .2rem;
+  overflow-y: auto;
+}
+.mm-sl {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .65rem .85rem;
+  color: rgba(255,255,255,.5);
+  font-size: .82rem; font-weight: 500;
+  text-decoration: none; border-radius: 5px;
+  position: relative;
+  transition: all .18s var(--mm-ease, ease);
+}
+.mm-sl i:first-child { width: 18px; font-size: .95rem; text-align: center; }
+.mm-sl:hover { background: rgba(255,255,255,.06); color: #fff; }
+.mm-sl.active {
+  background: rgba(201,168,76,.14);
+  color: var(--gold);
+}
+.mm-sl.active::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--gold); border-radius: 2px;
+}
+.mm-sl-badge {
+  margin-left: auto; background: var(--gold); color: #000;
+  font-size: .58rem; font-weight: 700;
+  min-width: 18px; padding: 1px 5px; border-radius: 9px; text-align: center;
+}
+.mm-sl-heading {
+  padding: .9rem .85rem .35rem;
+  font-size: .56rem; color: #4a4a4a;
+  text-transform: uppercase; letter-spacing: .14em;
+}
+.mm-sl-bottom { margin-top: auto; padding-top: .5rem; border-top: 1px solid rgba(255,255,255,.06); }
+
+/* User */
+.mm-admin-user { padding: 1rem; border-top: 1px solid rgba(255,255,255,.1); }
+.mm-admin-avatar {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #111; font-weight: 700; font-size: .72rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.mm-admin-uname { font-size: .8rem; font-weight: 700; color: #fff; }
+.mm-admin-urole { font-size: .56rem; color: #666; text-transform: uppercase; letter-spacing: .06em; }
+.mm-admin-logout {
+  width: 100%; text-align: left;
+  background: rgba(239,68,68,.1); color: #f87171;
+  border: 1px solid rgba(239,68,68,.25);
+  padding: .55rem .75rem; font-size: .75rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.mm-admin-logout:hover { background: rgba(239,68,68,.2); color: #fca5a5; }
+
+/* MAIN */
+.mm-admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f4f4f2; }
+.mm-admin-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 1.5rem; background: #fff;
+  border-bottom: 1px solid #e8e8e8; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.mm-admin-htitle { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: #999; font-weight: 700; }
+.mm-admin-online {
+  font-size: .58rem; text-transform: uppercase; letter-spacing: .08em;
+  background: #111; color: #fff; padding: .35rem .7rem; font-weight: 700;
+}
+.mm-admin-online i { color: #22c55e; font-size: .4rem; vertical-align: .12em; margin-right: .25rem; }
+.mm-admin-content { flex: 1; overflow: auto; padding: 1.75rem; animation: mmFadeIn .4s ease; }
+
+@media (max-width: 768px) {
+  .mm-admin-sidebar { width: 70px; min-width: 70px; }
+  .mm-admin-brand small, .mm-admin-stats, .mm-sl span, .mm-sl-heading,
+  .mm-sl-badge, .mm-admin-uname, .mm-admin-urole, .mm-admin-logout span { display: none; }
+  .mm-admin-brand h4 { font-size: .9rem; }
+  .mm-admin-content { padding: 1rem; }
+}

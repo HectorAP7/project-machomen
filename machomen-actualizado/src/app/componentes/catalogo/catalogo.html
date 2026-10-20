@@ -1,0 +1,178 @@
+<!-- ══ HERO CATÁLOGO ══ -->
+<div class="mm-cat-hero">
+  <div class="mm-cat-hero-overlay"></div>
+  <div class="container position-relative text-center">
+    <p class="mm-eyebrow mm-fade-up">Colección 2026</p>
+    <h1 class="mm-cat-hero-title mm-fade-up mm-delay-1">{{ tituloCat }}</h1>
+    <p class="text-white-50 mm-fade-up mm-delay-2">Cuero genuino · Calzado · Accesorios para el hombre moderno</p>
+  </div>
+</div>
+
+<div class="container my-4 my-lg-5">
+
+  <!-- Botón filtros móvil -->
+  <button class="mm-btn mm-btn-dark w-100 d-lg-none mb-3" (click)="toggleFiltros()">
+    <i class="bi bi-sliders me-2"></i>{{ filtrosMovil ? 'Ocultar filtros' : 'Filtrar y ordenar' }}
+  </button>
+
+  <div class="row g-4">
+
+    <!-- ══ SIDEBAR FILTROS ══ -->
+    <div class="col-lg-3" [class.d-none]="!filtrosMovil" [class.d-lg-block]="true">
+      <div class="mm-filtros sticky-lg-top" style="top:110px;">
+
+        <!-- Buscador -->
+        <div class="mm-filtro-block">
+          <label class="mm-filtro-label">Buscar</label>
+          <div class="mm-search">
+            <i class="bi bi-search"></i>
+            <input type="text" [(ngModel)]="busqueda" (input)="buscar()"
+                   placeholder="Nombre del producto...">
+            <button *ngIf="busqueda" (click)="limpiarBusqueda()" class="mm-search-clear">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categorías -->
+        <div class="mm-filtro-block">
+          <label class="mm-filtro-label">Categorías</label>
+          <button (click)="seleccionarCategoria(0)"
+                  class="mm-cat-pill" [class.active]="categoriaId===0">
+            <span><i class="bi bi-grid-3x3-gap-fill me-2"></i>Ver Todo</span>
+            <span class="mm-cat-count">{{ todosLosProductos.length }}</span>
+          </button>
+          <button *ngFor="let cat of categorias" (click)="seleccionarCategoria(cat.idcategoria)"
+                  class="mm-cat-pill" [class.active]="categoriaId===cat.idcategoria">
+            <span><i class="bi bi-chevron-right me-2"></i>{{ cat.descripcion }}</span>
+            <span class="mm-cat-count">{{ contarPorCategoria(cat.idcategoria) }}</span>
+          </button>
+        </div>
+
+        <!-- Precio -->
+        <div class="mm-filtro-block">
+          <label class="mm-filtro-label">Precio máximo</label>
+          <input type="range" class="mm-range" min="0" [max]="precioTope" step="10"
+                 [(ngModel)]="precioMax" (input)="cambiarPrecio()">
+          <div class="d-flex justify-content-between mt-1">
+            <small class="text-muted">S/ 0</small>
+            <small class="fw-bold text-gold">
+              {{ precioMax > 0 ? 'Hasta S/ ' + precioMax : 'Sin límite' }}
+            </small>
+          </div>
+        </div>
+
+        <!-- Limpiar -->
+        <button *ngIf="categoriaId>0 || busqueda || precioMax>0"
+                (click)="limpiarFiltros()" class="mm-btn mm-btn-outline w-100 mt-2"
+                style="font-size:.72rem;padding:.55rem;">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar filtros
+        </button>
+
+        <!-- Banner -->
+        <div class="mm-filtro-banner mt-4">
+          <p class="mm-eyebrow mb-1" style="font-size:.6rem;">Oferta</p>
+          <h6 class="fw-bold mb-1" style="font-family:'Cinzel',serif;color:var(--mm-gold);">ENVÍO GRATIS</h6>
+          <p class="small mb-0 opacity-75">En compras &gt; S/ 250</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PRODUCTOS ══ -->
+    <div class="col-lg-9">
+
+      <!-- Barra superior: conteo + orden -->
+      <div *ngIf="!cargando && !errorCarga"
+           class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 pb-3 border-bottom">
+        <span class="text-muted small">
+          <strong class="text-dark">{{ productos.length }}</strong> producto(s)
+        </span>
+        <div class="d-flex align-items-center gap-2">
+          <span class="small text-muted d-none d-sm-inline">Ordenar:</span>
+          <select class="mm-select" [(ngModel)]="orden" (change)="cambiarOrden()">
+            <option value="nuevos">Más nuevos</option>
+            <option value="precio-asc">Precio: menor a mayor</option>
+            <option value="precio-desc">Precio: mayor a menor</option>
+            <option value="nombre">Nombre A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="errorCarga" class="mm-alert-error">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>No se pudieron cargar los productos. Verifica que los servicios estén activos.</span>
+        <button (click)="recargar()" class="mm-btn mm-btn-dark ms-auto" style="padding:.4rem 1rem;font-size:.7rem;">
+          <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="cargando" class="text-center py-5">
+        <div class="mm-spinner mx-auto"></div>
+        <p class="text-muted mt-3">Cargando productos...</p>
+      </div>
+
+      <!-- Sin resultados -->
+      <div *ngIf="!cargando && !errorCarga && productos.length===0" class="text-center py-5">
+        <i class="bi bi-box-seam fs-1 opacity-25"></i>
+        <p class="text-muted fw-bold mt-3">No hay productos con ese criterio.</p>
+        <button (click)="limpiarFiltros()" class="mm-btn mm-btn-dark">Ver todo el catálogo</button>
+      </div>
+
+      <!-- GRID -->
+      <div class="row g-3 g-md-4" *ngIf="!cargando && pagina.length>0">
+        <div class="col-6 col-md-4" *ngFor="let p of pagina">
+          <div class="mm-prod h-100">
+
+            <div class="mm-prod-media">
+              <a [routerLink]="['/producto', p.idproducto]">
+                <img [src]="p.imagen || 'assets/img/no-image.png'" [alt]="p.descripcion"
+                     loading="lazy" decoding="async"
+                     onerror="this.src='assets/img/no-image.png'">
+              </a>
+              <span *ngIf="p.stock>0 && p.stock<=3" class="mm-prod-tag mm-tag-low">¡Últimos {{p.stock}}!</span>
+              <div *ngIf="p.stock===0" class="mm-prod-soldout">
+                <span>Agotado</span>
+              </div>
+              <button *ngIf="p.stock>0" (click)="agregarAlCarrito(p)" class="mm-prod-quickadd">
+                <ng-container *ngIf="tallasDe(p).length>0">
+                  <i class="bi bi-rulers"></i> Elegir talla
+                </ng-container>
+                <ng-container *ngIf="tallasDe(p).length===0">
+                  <i class="bi bi-bag-plus"></i> Añadir
+                </ng-container>
+              </button>
+            </div>
+
+            <div class="mm-prod-body">
+              <p class="mm-prod-cat">{{ p.categoria?.descripcion }}</p>
+              <a [routerLink]="['/producto', p.idproducto]" class="text-decoration-none">
+                <h6 class="mm-prod-name">{{ p.descripcion }}</h6>
+              </a>
+
+              <div *ngIf="tallasDe(p).length > 0" class="mm-prod-tallas">
+                <span *ngFor="let t of tallasDe(p)">{{ t }}</span>
+              </div>
+
+              <p class="mm-prod-price">S/ {{ p.precio | number:'1.2-2' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <nav *ngIf="!cargando && totalPaginas>1" class="mm-pagination mt-5">
+        <button (click)="irPagina(paginaActual-1)" [disabled]="paginaActual===1" class="mm-page-btn">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button *ngFor="let n of paginasArray" (click)="irPagina(n)"
+                class="mm-page-btn" [class.active]="n===paginaActual">{{ n }}</button>
+        <button (click)="irPagina(paginaActual+1)" [disabled]="paginaActual===totalPaginas" class="mm-page-btn">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+</div>

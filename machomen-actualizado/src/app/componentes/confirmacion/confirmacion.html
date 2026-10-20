@@ -1,0 +1,148 @@
+<div class="container py-5" style="max-width:700px;">
+
+  <!-- Éxito -->
+  <div class="text-center mb-4">
+    <div class="d-flex align-items-center justify-content-center mb-3"
+         style="width:80px;height:80px;background:#dcfce7;border-radius:50%;margin:0 auto;">
+      <i class="fa-solid fa-check" style="font-size:2.2rem;color:#15803d;"></i>
+    </div>
+    <h2 class="fw-bold text-uppercase mb-1" style="font-family:'Cinzel',serif;">¡Pedido Confirmado!</h2>
+    <p class="text-muted">Tu orden fue registrada. En breve será procesada por nuestro equipo.</p>
+  </div>
+
+  <div *ngIf="orden" class="bg-white border" style="font-size:.9rem;">
+
+    <!-- ENCABEZADO BOLETA - estilo recibo -->
+    <div class="text-center py-4 px-4" style="background:#111;color:#fff;">
+      <p class="mb-0 text-uppercase fw-bold" style="color:#c9a84c;letter-spacing:.2em;font-size:.7rem;">MachoMen Leather</p>
+      <p class="mb-0 small opacity-75" style="font-size:.72rem;">Av. Larco 1020, Miraflores · Lima, Perú</p>
+      <p class="mb-0 small opacity-75" style="font-size:.72rem;">RUC: 20612345678 · Tel: (01) 234-5678</p>
+      <hr style="border-color:rgba(255,255,255,.2);margin:.75rem 0;">
+      <h3 class="fw-bold mb-0" style="font-family:'Cinzel',serif;color:#c9a84c;font-size:1.6rem;">
+        BOLETA #{{ orden.idboleta }}
+      </h3>
+      <p class="small mb-0 opacity-75">{{ fechaActual }}</p>
+    </div>
+
+    <div class="p-4">
+
+      <!-- Datos del cliente -->
+      <div class="mb-4 pb-3" style="border-bottom:1px dashed #e0e0e0;">
+        <p class="fw-bold text-uppercase mb-2" style="font-size:.68rem;letter-spacing:.12em;color:#888;">Cliente</p>
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <span class="text-muted small d-block" style="font-size:.7rem;">Nombre</span>
+            <span class="fw-bold">{{ nombreCliente }}</span>
+          </div>
+          <div class="col-sm-6">
+            <span class="text-muted small d-block" style="font-size:.7rem;">Dirección de envío</span>
+            <span class="fw-bold small">{{ orden.infoPago?.direccion }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle de productos -->
+      <div class="mb-4">
+        <p class="fw-bold text-uppercase mb-3" style="font-size:.68rem;letter-spacing:.12em;color:#888;">Detalle de Compra</p>
+
+        <!-- Cabecera tabla -->
+        <div class="d-flex justify-content-between text-muted mb-2 pb-1" style="border-bottom:2px solid #111;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;">
+          <span style="flex:3;">Producto</span>
+          <span class="text-center" style="flex:1;">Cant.</span>
+          <span class="text-center" style="flex:1;">P.Unit</span>
+          <span class="text-end" style="flex:1;">Total</span>
+        </div>
+
+        <!-- Filas de productos -->
+        <div *ngFor="let item of orden.items" class="d-flex justify-content-between align-items-start py-2"
+             style="border-bottom:1px solid #f5f5f5;font-size:.85rem;">
+          <div style="flex:3;">
+            <span class="fw-bold d-block">{{ item.descripcion }}</span>
+            <span *ngIf="item.talla" class="badge border px-2"
+                  style="font-size:.6rem;background:#f5f5f5;color:#555;border-color:#ddd!important;">
+              Talla: {{ item.talla }}
+            </span>
+          </div>
+          <span class="text-center" style="flex:1;">{{ item.cantidad }}</span>
+          <span class="text-center" style="flex:1;">S/ {{ item.precio | number:'1.2-2' }}</span>
+          <span class="text-end fw-bold" style="flex:1;">S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Totales -->
+      <div class="mb-4" style="background:#fafafa;border:1px solid #eee;padding:1rem;">
+        <div class="d-flex justify-content-between small text-muted mb-1">
+          <span>Subtotal productos</span>
+          <span>S/ {{ totales?.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between small text-muted mb-1">
+          <span>Envío</span>
+          <span *ngIf="totales?.envio>0">S/ {{ totales?.envio | number:'1.2-2' }}</span>
+          <span *ngIf="totales?.envio===0" style="color:#15803d;font-weight:700;">GRATIS</span>
+        </div>
+        <div class="d-flex justify-content-between small text-muted mb-2">
+          <span>Valor neto</span><span>S/ {{ totales?.neto | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between small text-muted mb-2">
+          <span>IGV (18%)</span><span>S/ {{ totales?.igv | number:'1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold pt-2"
+             style="border-top:2px solid #111;font-size:1.15rem;">
+          <span>TOTAL PAGADO</span>
+          <span style="color:#c9a84c;">S/ {{ totales?.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Método de pago -->
+      <div class="mb-4 pb-3" style="border-bottom:1px dashed #e0e0e0;">
+        <p class="fw-bold text-uppercase mb-2" style="font-size:.68rem;letter-spacing:.12em;color:#888;">Datos del Pago</p>
+        <div class="row g-2">
+          <div class="col-sm-4">
+            <span class="text-muted small d-block" style="font-size:.7rem;">Método</span>
+            <span class="fw-bold">
+              <span *ngIf="orden.infoPago?.metodo===1">
+                <span style="color:#742284;">●</span> Yape
+              </span>
+              <span *ngIf="orden.infoPago?.metodo===2">
+                <span style="color:#00aeb6;">●</span> Plin
+              </span>
+              <span *ngIf="orden.infoPago?.metodo===3">
+                <i class="fa-brands fa-cc-visa me-1"></i>Tarjeta
+              </span>
+            </span>
+          </div>
+          <div class="col-sm-4">
+            <span class="text-muted small d-block" style="font-size:.7rem;">N° Operación</span>
+            <span class="fw-bold">{{ orden.infoPago?.nroOperacion || '—' }}</span>
+          </div>
+          <div class="col-sm-4">
+            <span class="text-muted small d-block" style="font-size:.7rem;">Estado</span>
+            <span class="badge rounded-0 px-2 py-1 fw-bold" style="background:#fef3c7;color:#92400e;font-size:.68rem;">
+              PENDIENTE VERIFICACIÓN
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del recibo -->
+      <div class="text-center text-muted" style="font-size:.72rem;">
+        <p class="mb-1">Recibirás confirmación por correo electrónico.</p>
+        <p class="mb-0">Gracias por tu compra en <strong>MachoMen Leather</strong> 🛍</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="d-flex gap-3 justify-content-center mt-4 flex-wrap">
+    <a routerLink="/pedidos"
+       class="btn btn-dark rounded-0 fw-bold text-uppercase px-4">
+      <i class="fa-solid fa-receipt me-2"></i>Ver mis pedidos
+    </a>
+    <a routerLink="/catalogo"
+       class="btn btn-outline-dark rounded-0 fw-bold text-uppercase px-4">
+      <i class="fa-solid fa-store me-2"></i>Seguir comprando
+    </a>
+  </div>
+
+</div>

@@ -1,0 +1,130 @@
+<div class="mb-4">
+  <p class="mm-eyebrow mb-1" style="font-size:.62rem;">Panel de Control</p>
+  <h4 class="fw-bold mb-0" style="font-family:'Cinzel',serif;">Dashboard</h4>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="mm-kpi">
+      <div class="mm-kpi-ico"><i class="bi bi-people"></i></div>
+      <div class="mm-kpi-label">Usuarios</div>
+      <div class="mm-kpi-num">
+        <span *ngIf="cargando" class="mm-spinner-sm"></span>
+        <span *ngIf="!cargando">{{ stats.totalUsuarios }}</span>
+      </div>
+      <div class="mm-kpi-sub">Registrados</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="mm-kpi">
+      <div class="mm-kpi-ico"><i class="bi bi-box-seam"></i></div>
+      <div class="mm-kpi-label">Productos</div>
+      <div class="mm-kpi-num">
+        <span *ngIf="cargando" class="mm-spinner-sm"></span>
+        <span *ngIf="!cargando">{{ stats.totalProductos }}</span>
+      </div>
+      <div class="mm-kpi-sub">En catálogo</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="mm-kpi">
+      <div class="mm-kpi-ico"><i class="bi bi-receipt"></i></div>
+      <div class="mm-kpi-label">Pedidos</div>
+      <div class="mm-kpi-num">
+        <span *ngIf="cargando" class="mm-spinner-sm"></span>
+        <span *ngIf="!cargando">{{ stats.totalBoletas }}</span>
+      </div>
+      <div class="mm-kpi-sub">Boletas emitidas</div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="mm-kpi mm-kpi-dark">
+      <div class="mm-kpi-ico"><i class="bi bi-cash-stack"></i></div>
+      <div class="mm-kpi-label">Ganancias</div>
+      <div class="mm-kpi-num">
+        <span *ngIf="cargando" class="mm-spinner-sm"></span>
+        <span *ngIf="!cargando">S/ {{ stats.gananciasTotales | number:'1.0-0' }}</span>
+      </div>
+      <div class="mm-kpi-sub">Ventas aprobadas</div>
+    </div>
+  </div>
+</div>
+
+<!-- GRÁFICOS -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="mm-panel h-100">
+      <div class="mm-panel-head">
+        <div>
+          <p class="mm-eyebrow mb-1" style="font-size:.58rem;">Análisis</p>
+          <h6 class="mm-panel-title">Ventas Mensuales</h6>
+        </div>
+        <span class="mm-badge-gold">Últimos 6 meses</span>
+      </div>
+      <div style="position:relative;height:280px;"><canvas #chartVentas></canvas></div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="mm-panel h-100">
+      <div class="mm-panel-head">
+        <div>
+          <p class="mm-eyebrow mb-1" style="font-size:.58rem;">Distribución</p>
+          <h6 class="mm-panel-title">Métodos de Pago</h6>
+        </div>
+      </div>
+      <div style="position:relative;height:260px;"><canvas #chartPagos></canvas></div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="mm-panel">
+      <div class="mm-panel-head">
+        <div>
+          <p class="mm-eyebrow mb-1" style="font-size:.58rem;">Inventario</p>
+          <h6 class="mm-panel-title">Top 5 Productos Más Vendidos</h6>
+        </div>
+        <a routerLink="/admin/productos" class="mm-btn mm-btn-outline" style="font-size:.65rem;padding:.4rem 1rem;">Gestionar</a>
+      </div>
+      <div style="position:relative;height:260px;"><canvas #chartTop></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Últimos pedidos -->
+<div class="mm-panel p-0">
+  <div class="mm-panel-head px-4 py-3" style="border-bottom:1px solid #f0f0f0;margin:0;">
+    <span class="fw-bold text-uppercase" style="font-size:.78rem;letter-spacing:.1em;">Últimos Pedidos</span>
+    <a routerLink="/admin/pedidos" class="text-gold fw-bold text-decoration-none text-uppercase"
+       style="font-size:.68rem;letter-spacing:.08em;">Ver todos →</a>
+  </div>
+  <div *ngIf="cargandoPedidos" class="text-center py-4"><div class="mm-spinner mx-auto"></div></div>
+  <div class="table-responsive" *ngIf="!cargandoPedidos && ultimosPedidos.length>0">
+    <table class="table table-hover align-middle mb-0" style="font-size:.82rem;">
+      <thead style="background:#fafafa;">
+        <tr class="text-muted text-uppercase" style="font-size:.62rem;letter-spacing:.08em;">
+          <th class="ps-4 py-3">#Boleta</th><th>Fecha</th><th>Cliente</th><th>Total</th><th class="text-center">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of ultimosPedidos" style="border-bottom:1px solid #f5f5f5;">
+          <td class="ps-4 fw-bold">#{{ p.idboleta }}</td>
+          <td class="text-muted">{{ p.fecha | date:'dd/MM/yy HH:mm' }}</td>
+          <td>
+            <div class="fw-bold">{{ p.nombreCliente || '—' }}</div>
+            <small class="text-muted" style="font-size:.65rem;">{{ p.correoCliente }}</small>
+          </td>
+          <td class="fw-bold">S/ {{ p.importe_total | number:'1.2-2' }}</td>
+          <td class="text-center">
+            <span class="mm-estado"
+                  [style.background]="p.estado===2?'#dcfce7':p.estado===3?'#fee2e2':'#fef3c7'"
+                  [style.color]="p.estado===2?'#15803d':p.estado===3?'#991b1b':'#92400e'">
+              {{ p.estado===1?'Pendiente':p.estado===2?'Aprobado':'Anulado' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

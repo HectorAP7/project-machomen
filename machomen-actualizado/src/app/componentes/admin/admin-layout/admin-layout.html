@@ -1,0 +1,101 @@
+<div class="mm-admin-wrap">
+
+  <!-- Sidebar -->
+  <nav class="mm-admin-sidebar">
+
+    <div class="mm-admin-brand">
+      <h4>MACHO<span>MEN</span></h4>
+      <small>Panel Administrativo</small>
+    </div>
+
+    <!-- Mini stats -->
+    <div class="mm-admin-stats" *ngIf="dashboard">
+      <div>
+        <div class="mm-stat-num">{{ dashboard.totalBoletas }}</div>
+        <div class="mm-stat-lbl">Pedidos</div>
+      </div>
+      <div class="mm-stat-sep"></div>
+      <div>
+        <div class="mm-stat-num">S/{{ dashboard.gananciasTotales | number:'1.0-0' }}</div>
+        <div class="mm-stat-lbl">Ventas</div>
+      </div>
+    </div>
+
+    <ul class="mm-admin-nav">
+      <li>
+        <a routerLink="/admin/dashboard" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-graph-up-arrow"></i><span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/pedidos" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-receipt"></i><span>Pedidos</span>
+          <span *ngIf="pendientesBadge > 0" class="mm-sl-badge">{{ pendientesBadge }}</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/productos" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-box-seam"></i><span>Productos</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/categorias" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-tags"></i><span>Categorías</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/cupones" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-ticket-perforated"></i><span>Cupones</span>
+        </a>
+      </li>
+
+      <li class="mm-sl-heading">Equipo</li>
+      <li>
+        <a routerLink="/admin/usuarios" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-people"></i><span>Usuarios</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/vendedores" routerLinkActive="active" class="mm-sl">
+          <i class="bi bi-person-badge"></i><span>Vendedores</span>
+        </a>
+      </li>
+
+      <li class="mm-sl-bottom">
+        <a routerLink="/catalogo" class="mm-sl">
+          <i class="bi bi-shop"></i><span>Ver Tienda</span>
+          <i class="bi bi-box-arrow-up-right ms-auto" style="font-size:.6rem;opacity:.4;"></i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- User -->
+    <div class="mm-admin-user">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="mm-admin-avatar">
+          {{ auth.usuario?.nombres?.charAt(0) }}{{ auth.usuario?.apellidos?.charAt(0) }}
+        </div>
+        <div class="overflow-hidden">
+          <div class="mm-admin-uname">{{ auth.usuario?.nombres }} {{ auth.usuario?.apellidos }}</div>
+          <div class="mm-admin-urole">Administrador</div>
+        </div>
+      </div>
+      <button (click)="logout()" class="mm-admin-logout">
+        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="mm-admin-main">
+    <header class="mm-admin-header">
+      <span class="mm-admin-htitle">MachoMen · Administración</span>
+      <span class="mm-admin-online">
+        <i class="bi bi-circle-fill"></i> En línea
+      </span>
+    </header>
+    <main class="mm-admin-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

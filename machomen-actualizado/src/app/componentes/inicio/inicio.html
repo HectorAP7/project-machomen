@@ -1,0 +1,287 @@
+<!-- ══ HERO SPLIT (sin video, imagen real de casaca de cuero) ══ -->
+<section class="mm-hero">
+  <div class="container-fluid h-100 p-0">
+    <div class="row g-0 h-100">
+
+      <!-- IZQUIERDA: Texto -->
+      <div class="col-lg-6 d-flex align-items-center mm-hero-left">
+        <div class="px-4 px-md-5 py-5 w-100" style="max-width:600px;margin-left:auto;">
+          <p class="text-uppercase fw-bold mb-3 mm-fade-up" style="color:#c9a84c;letter-spacing:.3em;font-size:.72rem;">
+            <span class="me-2">●</span>Nueva Colección 2026
+          </p>
+          <h1 class="display-2 fw-bold text-white mb-4 mm-fade-up mm-delay-1"
+              style="font-family:'Cinzel',serif;line-height:1.02;">
+            Define Tu<br><span style="color:#c9a84c;font-style:italic;">Estilo.</span>
+          </h1>
+          <p class="text-white-50 mb-5 mm-fade-up mm-delay-2" style="font-size:1.08rem;line-height:1.8;">
+            Casacas de cuero, calzado y accesorios de primera calidad.
+            Hecho para el hombre que sabe lo que quiere.
+          </p>
+          <div class="d-flex gap-3 flex-wrap mm-fade-up mm-delay-3">
+            <a routerLink="/catalogo"
+               class="btn btn-lg fw-bold text-uppercase rounded-0 px-5 py-3 mm-btn-gold">
+              Ver Colección <i class="fa-solid fa-arrow-right ms-2"></i>
+            </a>
+            <a routerLink="/registro"
+               class="btn btn-lg fw-bold text-uppercase rounded-0 px-5 py-3 btn-outline-light"
+               style="letter-spacing:.08em;font-size:.85rem;">
+              Crear Cuenta
+            </a>
+          </div>
+          <div class="d-flex gap-5 mt-5 pt-4 mm-fade-up mm-delay-3" style="border-top:1px solid rgba(255,255,255,.15);">
+            <div>
+              <div class="fw-bold text-white" style="font-size:1.8rem;font-family:'Cinzel',serif;">500+</div>
+              <div class="text-white-50 small text-uppercase" style="font-size:.65rem;letter-spacing:.1em;">Clientes</div>
+            </div>
+            <div>
+              <div class="fw-bold text-white" style="font-size:1.8rem;font-family:'Cinzel',serif;">50+</div>
+              <div class="text-white-50 small text-uppercase" style="font-size:.65rem;letter-spacing:.1em;">Productos</div>
+            </div>
+            <div>
+              <div class="fw-bold text-white" style="font-size:1.8rem;font-family:'Cinzel',serif;">5★</div>
+              <div class="text-white-50 small text-uppercase" style="font-size:.65rem;letter-spacing:.1em;">Calidad</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DERECHA: Imagen grande de casaca de cuero -->
+      <div class="col-lg-6 d-none d-lg-block position-relative mm-hero-right">
+        <img src="https://corzo.pe/DSWI/img/prod/1.jpg"
+             alt="Hombre con casaca de cuero"
+             class="mm-hero-img"
+             onerror="this.style.display='none'">
+        <!-- Overlay decorativo -->
+        <div class="mm-hero-right-overlay"></div>
+        <!-- Badge flotante -->
+        <div class="mm-hero-badge">
+          <p class="text-uppercase mb-1" style="font-size:.62rem;letter-spacing:.2em;opacity:.7;">Destacado</p>
+          <p class="fw-bold mb-1" style="font-family:'Cinzel',serif;color:#c9a84c;font-size:1.1rem;">Casaca Negra</p>
+          <p class="fw-bold mb-0" style="color:#fff;font-size:1.4rem;">S/ 150.00</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ CINTA DE BENEFICIOS ══ -->
+<div class="py-2 text-center" style="background:#c9a84c;">
+  <div class="container d-flex justify-content-center gap-4 flex-wrap small fw-bold text-uppercase"
+       style="color:#111;letter-spacing:.1em;font-size:.68rem;">
+    <span><i class="fa-solid fa-truck-fast me-1"></i>Envío gratis &gt; S/250</span>
+    <span class="d-none d-md-inline">•</span>
+    <span><i class="fa-solid fa-shield-halved me-1"></i>Yape, Plin y Tarjeta</span>
+    <span class="d-none d-md-inline">•</span>
+    <span><i class="fa-solid fa-medal me-1"></i>Cuero 100% genuino</span>
+    <span class="d-none d-md-inline">•</span>
+    <span><i class="fa-solid fa-rotate-left me-1"></i>30 días de cambio</span>
+  </div>
+</div>
+
+<!-- ══ CATEGORÍAS ══ -->
+<section class="py-5 bg-white">
+  <div class="container py-3">
+    <div class="text-center mb-5">
+      <p class="text-uppercase fw-bold mb-2" style="color:#c9a84c;letter-spacing:.25em;font-size:.7rem;">Explora</p>
+      <h2 class="fw-bold text-uppercase mb-0" style="font-family:'Cinzel',serif;letter-spacing:.04em;">Nuestra Colección</h2>
+      <div class="mx-auto mt-3" style="width:60px;height:3px;background:#c9a84c;"></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let cat of categorias">
+        <a [routerLink]="['/catalogo']" [queryParams]="{ cat: cat.idcategoria }"
+           class="text-decoration-none mm-cat-card d-block">
+          <div class="position-relative overflow-hidden" style="aspect-ratio:3/4;background:#111;">
+            <img [src]="cat.img" [alt]="cat.descripcion"
+                 class="w-100 h-100 mm-cat-img" loading="lazy" decoding="async"
+                 onerror="this.style.opacity='0.3'"
+                 style="object-fit:cover;">
+            <div class="position-absolute top-0 start-0 w-100 h-100 mm-cat-shade"></div>
+            <div class="position-absolute top-0 end-0 m-3" style="z-index:2;">
+              <span class="badge rounded-0 px-3 py-2"
+                    style="background:#c9a84c;color:#111;font-size:.62rem;letter-spacing:.12em;">
+                NUEVO
+              </span>
+            </div>
+            <div class="position-absolute bottom-0 start-0 w-100 p-4" style="z-index:2;">
+              <h5 class="text-white fw-bold text-uppercase mb-1"
+                  style="font-family:'Cinzel',serif;letter-spacing:.05em;">{{ cat.descripcion }}</h5>
+              <p class="text-white-50 small mb-2">{{ cat.tagline }}</p>
+              <span class="small text-uppercase fw-bold" style="font-size:.65rem;color:#c9a84c;letter-spacing:.12em;">
+                Ver productos <i class="fa-solid fa-arrow-right-long ms-1"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GALERÍA INSPIRACIÓN ══ -->
+<section class="py-5" style="background:#f8f7f4;">
+  <div class="container py-3">
+    <div class="text-center mb-5">
+      <p class="text-uppercase fw-bold mb-2" style="color:#c9a84c;letter-spacing:.25em;font-size:.7rem;">Inspírate</p>
+      <h2 class="fw-bold text-uppercase mb-0" style="font-family:'Cinzel',serif;letter-spacing:.04em;">Lookbook MachoMen</h2>
+      <div class="mx-auto mt-3" style="width:60px;height:3px;background:#c9a84c;"></div>
+    </div>
+    <div class="row g-3">
+      <!-- 6 productos como mosaico inspiracional -->
+      <div class="col-6 col-md-4 col-lg-2" *ngFor="let img of galeriaImgs">
+        <a routerLink="/catalogo" class="d-block overflow-hidden mm-gal-card"
+           style="aspect-ratio:3/4;background:#111;">
+          <img [src]="img" alt="MachoMen look"
+               class="w-100 h-100" loading="lazy" decoding="async"
+               style="object-fit:cover;transition:transform .5s ease;"
+               onerror="this.style.opacity='0.4'">
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRODUCTOS DESTACADOS ══ -->
+<section class="py-5 bg-white">
+  <div class="container py-3">
+    <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+      <div>
+        <p class="text-uppercase fw-bold mb-1" style="color:#c9a84c;letter-spacing:.25em;font-size:.7rem;">Lo más nuevo</p>
+        <h2 class="fw-bold text-uppercase mb-0" style="font-family:'Cinzel',serif;letter-spacing:.04em;">Destacados</h2>
+        <div class="mt-3" style="width:60px;height:3px;background:#c9a84c;"></div>
+      </div>
+      <a routerLink="/catalogo" class="btn btn-outline-dark rounded-0 text-uppercase fw-bold small px-4">
+        Ver todo <i class="fa-solid fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+
+    <div *ngIf="cargandoProductos" class="text-center py-5">
+      <div class="spinner-border" style="color:#c9a84c;"></div>
+      <p class="text-muted mt-3 small">Cargando productos...</p>
+    </div>
+
+    <div class="row g-4" *ngIf="!cargandoProductos">
+      <div class="col-6 col-md-3" *ngFor="let p of productosDestacados">
+        <div class="bg-white border mm-prod-card h-100">
+          <a [routerLink]="['/producto', p.idproducto]" class="text-decoration-none">
+            <div class="overflow-hidden bg-light position-relative" style="aspect-ratio:3/4;">
+              <img [src]="p.imagen || 'assets/img/no-image.png'" [alt]="p.descripcion"
+                   class="w-100 h-100 mm-prod-img" loading="lazy" decoding="async"
+                   style="object-fit:cover;"
+                   onerror="this.src='assets/img/no-image.png'">
+              <span *ngIf="p.stock>0 && p.stock<=3"
+                    class="position-absolute top-0 end-0 m-2 badge rounded-0 fw-bold"
+                    style="background:#ef4444;font-size:.6rem;">¡Últimos {{p.stock}}!</span>
+              <span *ngIf="p.stock===0"
+                    class="position-absolute top-0 end-0 m-2 badge rounded-0 fw-bold"
+                    style="background:#6c757d;font-size:.6rem;">Agotado</span>
+            </div>
+            <div class="p-3">
+              <p class="text-muted mb-1 small text-uppercase" style="font-size:.62rem;letter-spacing:.1em;">
+                {{ p.categoria?.descripcion }}
+              </p>
+              <h6 class="fw-bold text-dark text-uppercase mb-1"
+                  style="font-size:.82rem;font-family:'Lato',sans-serif;min-height:2.2em;">{{ p.descripcion }}</h6>
+
+              <!-- Tallas disponibles -->
+              <div *ngIf="tallasDe(p).length > 0" class="d-flex flex-wrap gap-1 mb-2">
+                <span *ngFor="let t of tallasDe(p)"
+                      class="badge fw-bold"
+                      style="background:#f5f5f5;color:#555;border:1px solid #ddd;font-size:.6rem;padding:2px 5px;">{{ t }}</span>
+              </div>
+
+              <p class="fw-bold mb-0" style="color:#c9a84c;font-size:1.05rem;">
+                S/ {{ p.precio | number:'1.2-2' }}
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BANNER ENVÍO ══ -->
+<section class="py-5 position-relative overflow-hidden" style="background:#111;">
+  <div class="container position-relative" style="z-index:2;">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <p class="text-uppercase mb-2" style="color:#c9a84c;letter-spacing:.25em;font-size:.7rem;">Oferta especial</p>
+        <h2 class="fw-bold text-white text-uppercase mb-2" style="font-family:'Cinzel',serif;">
+          Envío Gratis &gt; S/ 250
+        </h2>
+        <p class="text-white-50 mb-0">Válido para toda Lima. Sin mínimo de productos.</p>
+      </div>
+      <div class="col-md-4 text-md-end mt-4 mt-md-0">
+        <a routerLink="/catalogo" class="btn btn-lg fw-bold text-uppercase rounded-0 px-5 py-3 mm-btn-gold">
+          Aprovechar <i class="fa-solid fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="mm-banner-deco"></div>
+</section>
+
+<!-- ══ MÉTODOS DE PAGO ══ -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="text-uppercase fw-bold mb-1" style="color:#c9a84c;letter-spacing:.25em;font-size:.7rem;">Paga como quieras</p>
+      <h4 class="fw-bold text-uppercase mb-0" style="font-family:'Cinzel',serif;">Métodos de Pago</h4>
+      <div class="mx-auto mt-3" style="width:60px;height:3px;background:#c9a84c;"></div>
+    </div>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-3">
+        <div class="border p-4 text-center h-100 mm-pay-card">
+          <div class="mm-pay-icon mb-2" style="background:#742284;">Y</div>
+          <span class="fw-bold d-block mb-1" style="color:#742284;font-size:1.3rem;">Yape</span>
+          <span class="text-muted small">Escanea el QR y paga al instante</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="border p-4 text-center h-100 mm-pay-card">
+          <div class="mm-pay-icon mb-2" style="background:#00aeb6;">P</div>
+          <span class="fw-bold d-block mb-1" style="color:#00aeb6;font-size:1.3rem;">Plin</span>
+          <span class="text-muted small">Transferencia inmediata sin comisión</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="border p-4 text-center h-100 mm-pay-card">
+          <div class="mm-pay-icon mb-2" style="background:#1a1f71;">
+            <i class="fa-solid fa-credit-card"></i>
+          </div>
+          <span class="fw-bold d-block mb-1" style="color:#1a1f71;font-size:1.3rem;">Tarjeta</span>
+          <span class="text-muted small">Crédito o débito (Visa / Mastercard)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="py-5 border-top" style="background:#fafafa;">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-6 col-md-3">
+        <i class="fa-solid fa-truck fa-2x mb-3" style="color:#c9a84c;"></i>
+        <h6 class="fw-bold text-uppercase small" style="letter-spacing:.06em;">Envío Rápido</h6>
+        <p class="text-muted small mb-0">24-48h en Lima</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="fa-solid fa-shield-halved fa-2x mb-3" style="color:#c9a84c;"></i>
+        <h6 class="fw-bold text-uppercase small" style="letter-spacing:.06em;">Pago Seguro</h6>
+        <p class="text-muted small mb-0">Yape, Plin, Tarjeta</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="fa-solid fa-award fa-2x mb-3" style="color:#c9a84c;"></i>
+        <h6 class="fw-bold text-uppercase small" style="letter-spacing:.06em;">Calidad Premium</h6>
+        <p class="text-muted small mb-0">Materiales de primera</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="fa-solid fa-headset fa-2x mb-3" style="color:#c9a84c;"></i>
+        <h6 class="fw-bold text-uppercase small" style="letter-spacing:.06em;">Soporte 24/7</h6>
+        <p class="text-muted small mb-0">Siempre disponibles</p>
+      </div>
+    </div>
+  </div>
+</section>

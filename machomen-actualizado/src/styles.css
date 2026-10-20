@@ -1,0 +1,154 @@
+/* ════════════════════════════════════════════════════════════
+   MACHOMEN · ESTILOS GLOBALES
+   Paleta: Negro premium (#0a0a0a) + Dorado (#c9a84c)
+════════════════════════════════════════════════════════════ */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap');
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --mm-ink:        #0a0a0a;
+  --mm-ink-soft:   #1a1a1a;
+  --mm-ink-2:      #242424;
+  --mm-gold:       #c9a84c;
+  --mm-gold-light: #e0c068;
+  --mm-gold-dark:  #a8893a;
+  --mm-cream:      #faf7ef;
+  --mm-paper:      #f8f7f4;
+  --mm-line:       #ececec;
+  --mm-text:       #2b2b2b;
+  --mm-muted:      #8a8a8a;
+
+  --font-heading: 'Cinzel', serif;
+  --font-body:    'Lato', sans-serif;
+
+  --mm-shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+  --mm-shadow:    0 8px 28px rgba(0,0,0,.10);
+  --mm-shadow-lg: 0 16px 48px rgba(0,0,0,.16);
+  --mm-ease:      cubic-bezier(.4,0,.2,1);
+}
+
+/* ── BASE ── */
+html, body {
+  height: 100%; margin: 0;
+  background: #fff; color: var(--mm-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+app-root { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1; display: flex; flex-direction: column; }
+
+h1, h2, h3, h4, h5, .font-heading { font-family: var(--font-heading); letter-spacing: .04em; }
+
+/* Scrollbar elegante */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #f3f3f3; }
+::-webkit-scrollbar-thumb { background: #c9c9c9; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--mm-gold); }
+
+/* Selección de texto */
+::selection { background: var(--mm-gold); color: #fff; }
+
+/* ── BOTONES MACHOMEN ── */
+.mm-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  border-radius: 0; border: 2px solid transparent;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  font-size: .8rem; padding: .75rem 1.75rem;
+  transition: all .25s var(--mm-ease);
+  cursor: pointer; text-decoration: none;
+}
+.mm-btn-dark  { background: var(--mm-ink); color: #fff; border-color: var(--mm-ink); }
+.mm-btn-dark:hover  { background: #000; transform: translateY(-2px); box-shadow: var(--mm-shadow); color: #fff; }
+.mm-btn-gold  { background: var(--mm-gold); color: #111; border-color: var(--mm-gold); }
+.mm-btn-gold:hover  { background: var(--mm-gold-light); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(201,168,76,.4); color: #111; }
+.mm-btn-outline { background: transparent; color: var(--mm-ink); border-color: var(--mm-ink); }
+.mm-btn-outline:hover { background: var(--mm-ink); color: #fff; }
+.mm-btn-outline-gold { background: transparent; color: var(--mm-gold-dark); border-color: var(--mm-gold); }
+.mm-btn-outline-gold:hover { background: var(--mm-gold); color: #111; }
+
+/* ── INPUTS ── */
+.mm-input {
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1.5px solid #dcdcdc !important;
+  background: #fafafa !important;
+  padding: .65rem .85rem !important;
+  transition: all .2s ease !important;
+}
+.mm-input:focus {
+  background: #fff !important;
+  box-shadow: none !important;
+  border-bottom: 1.5px solid var(--mm-gold) !important;
+}
+/* compat con clase anterior */
+.input-macho { border-radius: 0 !important; border: none !important; border-bottom: 1px solid #dee2e6 !important; background: #f8f9fa !important; }
+.input-macho:focus { background: #fff !important; box-shadow: none !important; border-bottom: 1px solid var(--mm-gold) !important; }
+
+/* ── TÍTULOS DE SECCIÓN ── */
+.mm-eyebrow {
+  text-transform: uppercase; font-weight: 700;
+  color: var(--mm-gold); letter-spacing: .25em; font-size: .7rem;
+  margin-bottom: .5rem;
+}
+.mm-section-title {
+  font-family: var(--font-heading);
+  font-weight: 700; text-transform: uppercase;
+  letter-spacing: .04em; margin-bottom: 0;
+}
+.mm-divider-gold { width: 60px; height: 3px; background: var(--mm-gold); margin: 1rem auto 0; }
+
+/* ── BADGES ── */
+.mm-badge-gold { background: var(--mm-gold); color: #111; border-radius: 0; font-size: .62rem; letter-spacing: .1em; padding: .35rem .7rem; font-weight: 700; }
+.mm-badge-dark { background: var(--mm-ink); color: #fff; border-radius: 0; font-size: .62rem; letter-spacing: .1em; padding: .35rem .7rem; font-weight: 700; }
+
+/* ── LINKS ── */
+.link-macho { color: var(--mm-muted) !important; text-decoration: none !important; transition: .3s; }
+.link-macho:hover { color: #000 !important; }
+
+/* ── DROPDOWN BOOTSTRAP (compat) ── */
+.dropdown-menu { border: none; box-shadow: var(--mm-shadow); border-radius: 0; }
+.nav-pills .nav-link.active { background: var(--mm-ink); color: #fff !important; }
+
+/* ── SPINNER ── */
+.page-spinner { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 300px; }
+.mm-spinner {
+  width: 44px; height: 44px;
+  border: 3px solid #eee; border-top-color: var(--mm-gold);
+  border-radius: 50%; animation: mmSpin .8s linear infinite;
+}
+@keyframes mmSpin { to { transform: rotate(360deg); } }
+
+/* ── TARJETAS GENÉRICAS ── */
+.mm-card {
+  background: #fff; border: 1px solid var(--mm-line);
+  transition: transform .25s var(--mm-ease), box-shadow .25s var(--mm-ease);
+}
+.mm-card:hover { transform: translateY(-4px); box-shadow: var(--mm-shadow); }
+
+/* ── ANIMACIONES REUTILIZABLES ── */
+.mm-fade-up   { opacity: 0; transform: translateY(24px); animation: mmFadeUp .7s var(--mm-ease) forwards; }
+.mm-fade-in   { opacity: 0; animation: mmFadeIn .6s ease forwards; }
+.mm-delay-1 { animation-delay: .1s; }
+.mm-delay-2 { animation-delay: .22s; }
+.mm-delay-3 { animation-delay: .34s; }
+.mm-delay-4 { animation-delay: .46s; }
+@keyframes mmFadeUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes mmFadeIn { to { opacity: 1; } }
+
+.transition-hover { transition: all .3s ease; }
+.transition-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,.2); }
+
+/* ── SWEETALERT2 override (alineado a la marca) ── */
+.swal2-popup { border-radius: 4px !important; font-family: var(--font-body) !important; }
+.swal2-title { font-family: var(--font-heading) !important; }
+.swal2-styled.swal2-confirm { border-radius: 0 !important; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+
+/* ── UTILIDADES ── */
+.tracking-wide { letter-spacing: .12em; }
+.bg-ink   { background: var(--mm-ink) !important; }
+.bg-cream { background: var(--mm-cream) !important; }
+.text-gold { color: var(--mm-gold) !important; }
+.aspect-3-4 { aspect-ratio: 3/4; }

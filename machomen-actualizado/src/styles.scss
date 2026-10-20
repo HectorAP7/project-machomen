@@ -1,0 +1,89 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap');
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Lato', sans-serif;
+  color: #111;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f5f5f5; }
+::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
+
+/* ── Gold accent ── */
+:root {
+  --mm-gold:   #c9a84c;
+  --mm-dark:   #111111;
+  --mm-light:  #fafafa;
+}
+
+/* ── Utilities ── */
+.text-gold    { color: var(--mm-gold) !important; }
+.bg-mm-dark   { background: var(--mm-dark) !important; }
+.border-gold  { border-color: var(--mm-gold) !important; }
+
+/* ── Buttons ── */
+.btn-gold {
+  background: var(--mm-gold);
+  color: #111;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border: none;
+}
+.btn-gold:hover { background: #b8943a; color: #111; }
+
+/* ── Smooth transitions ── */
+a, .btn, .card { transition: all .2s ease; }
+
+/* ── Sticky footer ── */
+html, body { height: 100%; }
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+router-outlet + * { flex: 1; }
+
+/* ── Admin badges ── */
+.mm-badge-ok   { display:inline-block;padding:3px 10px;font-size:.62rem;font-weight:700;
+                 text-transform:uppercase;letter-spacing:.08em;background:#dcfce7;color:#15803d; }
+.mm-badge-warn { display:inline-block;padding:3px 10px;font-size:.62rem;font-weight:700;
+                 text-transform:uppercase;letter-spacing:.08em;background:#fef3c7;color:#92400e; }
+.mm-badge-err  { display:inline-block;padding:3px 10px;font-size:.62rem;font-weight:700;
+                 text-transform:uppercase;letter-spacing:.08em;background:#fee2e2;color:#991b1b; }
+.mm-badge-sec  { display:inline-block;padding:3px 10px;font-size:.62rem;font-weight:700;
+                 text-transform:uppercase;letter-spacing:.08em;background:#f5f5f5;color:#555; }
+
+/* ── Active nav link ── */
+.nav-link.active {
+  color: var(--mm-gold) !important;
+  font-weight: 700;
+}
+
+/* ── Forms ── */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--mm-gold);
+  box-shadow: 0 0 0 .15rem rgba(201,168,76,.2);
+}
+
+/* ── SweetAlert2 custom ── */
+.swal2-confirm {
+  border-radius: 0 !important;
+  font-weight: 700 !important;
+  letter-spacing: .05em !important;
+}
+.swal2-cancel {
+  border-radius: 0 !important;
+}
+
+/* ── Hero section ── */
+.mm-hero .inset-0 {
+  top: 0; left: 0; right: 0; bottom: 0;
+}

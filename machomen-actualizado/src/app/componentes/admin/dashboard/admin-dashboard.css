@@ -1,0 +1,47 @@
+/* ════ DASHBOARD ADMIN MACHOMEN ════ */
+
+/* KPI cards */
+.mm-kpi {
+  position: relative;
+  background: #fff; border: 1px solid #f0f0f0;
+  border-top: 3px solid var(--mm-gold);
+  padding: 1.25rem 1.5rem;
+  overflow: hidden;
+  transition: transform .25s var(--mm-ease), box-shadow .25s var(--mm-ease);
+}
+.mm-kpi:hover { transform: translateY(-4px); box-shadow: var(--mm-shadow); }
+.mm-kpi-ico {
+  position: absolute; top: 1rem; right: 1.25rem;
+  font-size: 1.6rem; color: #ececec;
+  transition: color .25s ease;
+}
+.mm-kpi:hover .mm-kpi-ico { color: var(--mm-gold); }
+.mm-kpi-label { font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; color: #999; margin-bottom: .5rem; }
+.mm-kpi-num { font-size: 2rem; font-weight: 700; color: #1a1a1a; line-height: 1; }
+.mm-kpi-sub { font-size: .7rem; color: #aaa; margin-top: .35rem; }
+
+/* KPI oscuro (ganancias) */
+.mm-kpi-dark { background: linear-gradient(135deg, #0d0d0d, #1f1f1f); border-color: #000; border-top-color: var(--mm-gold); }
+.mm-kpi-dark .mm-kpi-label { color: rgba(255,255,255,.45); }
+.mm-kpi-dark .mm-kpi-num { color: var(--mm-gold); font-size: 1.6rem; }
+.mm-kpi-dark .mm-kpi-sub { color: rgba(255,255,255,.4); }
+.mm-kpi-dark .mm-kpi-ico { color: rgba(201,168,76,.3); }
+
+/* Paneles de gráficos */
+.mm-panel { background: #fff; border: 1px solid #f0f0f0; padding: 1.5rem; }
+.mm-panel-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.mm-panel-title { font-family: 'Cinzel', serif; font-weight: 700; margin: 0; font-size: 1rem; }
+
+/* Estado badge */
+.mm-estado {
+  display: inline-block; padding: 3px 10px;
+  font-size: .62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+
+/* Spinner pequeño */
+.mm-spinner-sm {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid #eee; border-top-color: var(--mm-gold);
+  border-radius: 50%; animation: mmSpin .8s linear infinite;
+}

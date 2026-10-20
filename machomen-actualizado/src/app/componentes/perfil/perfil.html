@@ -1,0 +1,120 @@
+<div class="mm-perfil-bg">
+<div class="container" style="max-width:760px;">
+
+  <!-- Header perfil -->
+  <div class="mm-perfil-head mm-fade-up">
+    <div class="mm-perfil-avatar">{{ iniciales }}</div>
+    <div class="flex-grow-1 min-w-0">
+      <h5 class="mb-0" style="font-family:'Cinzel',serif;font-weight:700;">{{ usuario.nombres }} {{ usuario.apellidos }}</h5>
+      <div class="text-muted small text-truncate">{{ usuario.correo }}</div>
+      <span class="mm-perfil-rol">
+        {{ usuario.rol===1?'Administrador':usuario.rol===3?'Vendedor':'Cliente' }}
+      </span>
+    </div>
+    <a routerLink="/pedidos" class="mm-btn mm-btn-outline d-none d-md-inline-flex" style="font-size:.7rem;padding:.55rem 1.1rem;">
+      <i class="bi bi-receipt"></i>Mis Pedidos
+    </a>
+  </div>
+
+  <div *ngIf="cargando" class="text-center py-5"><div class="mm-spinner mx-auto"></div></div>
+
+  <div *ngIf="!cargando" class="mm-fade-up mm-delay-1">
+
+    <!-- Tabs -->
+    <div class="mm-tabs">
+      <button (click)="tabActiva='datos'" class="mm-tab" [class.active]="tabActiva==='datos'">
+        <i class="bi bi-person"></i>Datos
+      </button>
+      <button (click)="tabActiva='seguridad'" class="mm-tab" [class.active]="tabActiva==='seguridad'">
+        <i class="bi bi-shield-lock"></i>Contraseña
+      </button>
+    </div>
+
+    <!-- TAB Datos -->
+    <div *ngIf="tabActiva==='datos'" class="mm-perfil-card">
+      <h6 class="mm-perfil-section">Información Personal</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="mm-perfil-label">Nombres *</label>
+          <input type="text" [(ngModel)]="usuario.nombres" class="form-control mm-input">
+        </div>
+        <div class="col-md-6">
+          <label class="mm-perfil-label">Apellidos *</label>
+          <input type="text" [(ngModel)]="usuario.apellidos" class="form-control mm-input">
+        </div>
+        <div class="col-md-6">
+          <label class="mm-perfil-label">DNI</label>
+          <input type="text" [(ngModel)]="usuario.dni" class="form-control mm-input" maxlength="8">
+        </div>
+        <div class="col-md-6">
+          <label class="mm-perfil-label">Celular</label>
+          <input type="tel" [(ngModel)]="usuario.celular" class="form-control mm-input" maxlength="12" placeholder="987654321">
+        </div>
+        <div class="col-12">
+          <label class="mm-perfil-label">Correo Electrónico</label>
+          <input type="email" [value]="usuario.correo" class="form-control mm-input" readonly style="background:#f0f0f0!important;">
+          <small class="text-muted" style="font-size:.68rem;">El correo no puede modificarse.</small>
+        </div>
+        <div class="col-12">
+          <label class="mm-perfil-label">Dirección</label>
+          <input type="text" [(ngModel)]="usuario.direccion" class="form-control mm-input" placeholder="Av. Example 123">
+        </div>
+        <div class="col-md-6">
+          <label class="mm-perfil-label">Distrito</label>
+          <select [(ngModel)]="usuario.iddistrito" class="form-select mm-input">
+            <option [value]="0">-- Seleccionar --</option>
+            <option *ngFor="let d of distritos" [value]="d.iddistrito">{{ d.descripcion }}</option>
+          </select>
+        </div>
+        <div class="col-12 pt-2">
+          <button (click)="guardarDatos()" [disabled]="guardando" class="mm-btn mm-btn-dark">
+            <span *ngIf="guardando" class="mm-spinner-sm me-2"></span>
+            <i *ngIf="!guardando" class="bi bi-floppy"></i>
+            {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB Contraseña -->
+    <div *ngIf="tabActiva==='seguridad'" class="mm-perfil-card" style="max-width:460px;">
+      <h6 class="mm-perfil-section">Cambiar Contraseña</h6>
+      <div class="mb-3">
+        <label class="mm-perfil-label">Nueva Contraseña (mín. 6)</label>
+        <div class="input-group">
+          <input [type]="verClave?'text':'password'" [(ngModel)]="usuario['claveNueva']"
+                 class="form-control mm-input" placeholder="••••••••">
+          <button type="button" (click)="verClave=!verClave" class="btn border rounded-0">
+            <i class="bi" [class.bi-eye]="!verClave" [class.bi-eye-slash]="verClave"></i>
+          </button>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="mm-perfil-label">Repetir Contraseña</label>
+        <div class="input-group">
+          <input [type]="verClave2?'text':'password'" [(ngModel)]="usuario['claveRepetir']"
+                 class="form-control mm-input"
+                 [class.is-invalid]="usuario['claveRepetir'] && usuario['claveNueva']!==usuario['claveRepetir']"
+                 placeholder="••••••••">
+          <button type="button" (click)="verClave2=!verClave2" class="btn border rounded-0">
+            <i class="bi" [class.bi-eye]="!verClave2" [class.bi-eye-slash]="verClave2"></i>
+          </button>
+        </div>
+        <small *ngIf="usuario['claveRepetir'] && usuario['claveNueva']!==usuario['claveRepetir']"
+               class="text-danger" style="font-size:.7rem;">Las contraseñas no coinciden.</small>
+      </div>
+      <div class="mm-perfil-aviso">
+        <i class="bi bi-exclamation-triangle"></i>
+        Después de cambiar la contraseña deberás iniciar sesión nuevamente.
+      </div>
+      <button (click)="cambiarClave()" [disabled]="guardando" class="mm-btn mm-btn-dark">
+        <span *ngIf="guardando" class="mm-spinner-sm me-2"></span>
+        <i *ngIf="!guardando" class="bi bi-key"></i>
+        {{ guardando ? 'Actualizando...' : 'Cambiar Contraseña' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</div>

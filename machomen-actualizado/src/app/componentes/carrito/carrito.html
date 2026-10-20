@@ -1,0 +1,143 @@
+<div class="container my-4 my-lg-5">
+
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3" style="border-bottom:2px solid #111;">
+    <h4 class="fw-bold text-uppercase mb-0 d-flex align-items-center gap-2" style="font-family:'Cinzel',serif;">
+      <i class="bi bi-bag-heart text-gold"></i>Mi Bolsa
+    </h4>
+    <span class="mm-badge-dark">{{ totalItems }} {{ totalItems===1?'producto':'productos' }}</span>
+  </div>
+
+  <!-- VACÍO -->
+  <div *ngIf="items.length===0" class="text-center py-5">
+    <i class="bi bi-bag-x" style="font-size:4.5rem;opacity:.15;"></i>
+    <h5 class="fw-bold text-muted text-uppercase mt-3" style="font-family:'Cinzel',serif;">Tu bolsa está vacía</h5>
+    <p class="text-muted small mb-4">Agrega productos desde el catálogo.</p>
+    <a routerLink="/catalogo" class="mm-btn mm-btn-dark">
+      <i class="bi bi-shop"></i>Ver catálogo
+    </a>
+  </div>
+
+  <!-- CON ITEMS -->
+  <div *ngIf="items.length>0" class="row g-4">
+
+    <!-- Lista de productos -->
+    <div class="col-lg-8">
+      <div *ngFor="let item of items; let i=index" class="mm-cart-item mm-fade-up" [style.animation-delay]="(i*0.06)+'s'">
+
+        <div class="mm-cart-img">
+          <img [src]="item.imagen || 'assets/img/no-image.png'" [alt]="item.descripcion"
+               onerror="this.src='assets/img/no-image.png'">
+        </div>
+
+        <div class="flex-grow-1 min-w-0">
+          <h6 class="mm-cart-name">{{ item.descripcion }}</h6>
+          <span *ngIf="item.talla" class="mm-cart-talla">Talla: {{ item.talla }}</span>
+          <p class="mm-cart-unit">S/ {{ item.precio | number:'1.2-2' }} c/u</p>
+
+          <div class="mm-qty">
+            <button (click)="decrementar(item)" [disabled]="item.cantidad<=1" aria-label="Quitar uno">
+              <i class="bi bi-dash"></i>
+            </button>
+            <span class="mm-qty-num">{{ item.cantidad }}</span>
+            <button (click)="incrementar(item)" [disabled]="item.cantidad>=item.stock" aria-label="Agregar uno">
+              <i class="bi bi-plus"></i>
+            </button>
+            <button (click)="eliminar(item)" class="mm-qty-del ms-2" aria-label="Eliminar">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-end flex-shrink-0">
+          <div class="mm-cart-subtotal">S/ {{ (item.precio * item.cantidad) | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="text-end mt-2">
+        <button (click)="limpiar()" class="mm-cart-clear">
+          <i class="bi bi-trash3 me-1"></i>Vaciar bolsa
+        </button>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="col-lg-4">
+      <div class="mm-resumen sticky-lg-top" style="top:110px;">
+        <h6 class="mm-resumen-title">Resumen</h6>
+
+        <div class="mm-resumen-row">
+          <span class="text-muted">Subtotal</span>
+          <span>S/ {{ totales.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="mm-resumen-row">
+          <span class="text-muted">Envío</span>
+          <span *ngIf="totales.envio>0">S/ {{ totales.envio | number:'1.2-2' }}</span>
+          <span *ngIf="totales.envio===0" class="text-success fw-bold">GRATIS</span>
+        </div>
+
+        <div *ngIf="totales.envio>0" class="mm-envio-alert mm-envio-warn">
+          <i class="bi bi-truck"></i>
+          Agrega S/ {{ (250-totales.subtotal) | number:'1.0-0' }} más para envío gratis
+        </div>
+        <div *ngIf="totales.envio===0" class="mm-envio-alert mm-envio-ok">
+          <i class="bi bi-check-circle"></i>¡Envío gratis aplicado!
+        </div>
+
+        <div class="mm-resumen-divider"></div>
+
+        <!-- CUPÓN -->
+        <div class="mm-cupon">
+          <label class="mm-cupon-label">¿Tienes un cupón?</label>
+          <div class="mm-cupon-row" *ngIf="!cuponOk">
+            <input type="text" [(ngModel)]="codigoCupon" (keyup.enter)="aplicarCupon()"
+                   placeholder="Ej: MACHO10" [disabled]="validandoCupon">
+            <button (click)="aplicarCupon()" [disabled]="validandoCupon">
+              <span *ngIf="!validandoCupon">Aplicar</span>
+              <span *ngIf="validandoCupon" class="mm-spinner-sm"></span>
+            </button>
+          </div>
+          <div class="mm-cupon-aplicado" *ngIf="cuponOk">
+            <span><i class="bi bi-ticket-perforated"></i> {{ codigoCupon }}</span>
+            <button (click)="quitarCupon()" aria-label="Quitar cupón"><i class="bi bi-x-lg"></i></button>
+          </div>
+          <small *ngIf="cuponMensaje" class="mm-cupon-msg" [class.ok]="cuponOk" [class.err]="!cuponOk">
+            {{ cuponMensaje }}
+          </small>
+        </div>
+
+        <!-- Fila de descuento -->
+        <div class="mm-resumen-row" *ngIf="totales.descuento > 0">
+          <span class="text-success fw-bold">Descuento</span>
+          <span class="text-success fw-bold">− S/ {{ totales.descuento | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="mm-resumen-divider"></div>
+
+        <div class="mm-resumen-row small"><span class="text-muted">Valor neto</span><span class="text-muted">S/ {{ totales.neto | number:'1.2-2' }}</span></div>
+        <div class="mm-resumen-row small"><span class="text-muted">IGV (18%) incluido</span><span class="text-muted">S/ {{ totales.igv | number:'1.2-2' }}</span></div>
+
+        <div class="mm-resumen-total">
+          <span>TOTAL</span>
+          <span class="text-gold">S/ {{ totales.total | number:'1.2-2' }}</span>
+        </div>
+
+        <a *ngIf="auth.isAuthenticated" routerLink="/pasarela" class="mm-btn mm-btn-dark w-100 py-3 mt-3">
+          <i class="bi bi-credit-card"></i>Proceder al Pago
+        </a>
+        <a *ngIf="!auth.isAuthenticated" routerLink="/login" class="mm-btn mm-btn-dark w-100 py-3 mt-3">
+          <i class="bi bi-lock"></i>Iniciar Sesión para Pagar
+        </a>
+        <a routerLink="/catalogo" class="mm-btn mm-btn-outline w-100 mt-2" style="font-size:.72rem;padding:.6rem;">
+          <i class="bi bi-arrow-left"></i>Seguir Comprando
+        </a>
+
+        <div class="mm-resumen-pagos">
+          <span><i class="bi bi-shield-check"></i> Pago seguro</span>
+          <span>Yape · Plin · Tarjeta</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

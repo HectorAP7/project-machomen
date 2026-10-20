@@ -1,0 +1,137 @@
+<!-- ══ TOP BAR ══ -->
+<div class="mm-topbar">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div class="mm-topbar-contact">
+      <span><i class="bi bi-telephone-fill me-1"></i> +51 999 000 111</span>
+      <span class="mx-3 opacity-25 d-none d-sm-inline">|</span>
+      <span class="d-none d-sm-inline"><i class="bi bi-envelope-fill me-1"></i> contacto@machomen.com</span>
+    </div>
+    <div class="d-none d-md-flex align-items-center gap-3 mm-topbar-promo">
+      <span><i class="bi bi-truck me-1"></i> Envío gratis &gt; S/ 250</span>
+      <span class="mm-topbar-shine">CUERO 100% GENUINO</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<header class="mm-header sticky-top" [class.mm-scrolled]="scrolled">
+  <nav class="navbar navbar-expand-lg py-0">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand mm-brand" routerLink="/inicio" (click)="closeAll()">
+        MACHO<span>MEN</span>
+        <small class="mm-brand-tag d-none d-sm-block">LEATHER &amp; STYLE</small>
+      </a>
+
+      <!-- Toggler móvil -->
+      <button class="navbar-toggler border-0 shadow-none" type="button" (click)="toggleMovil()">
+        <i class="bi" [ngClass]="menuMovil ? 'bi-x-lg' : 'bi-list'" style="font-size:1.6rem;"></i>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" [class.show]="menuMovil">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 mm-nav-links">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/inicio" routerLinkActive="active" (click)="closeAll()">
+              <span>Inicio</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/catalogo" routerLinkActive="active" (click)="closeAll()">
+              <span>Catálogo</span>
+            </a>
+          </li>
+
+          <!-- Acceso PANEL VENDEDOR (visible solo para rol vendedor) -->
+          <li class="nav-item" *ngIf="auth.isVendedor">
+            <a class="nav-link mm-link-vendedor" routerLink="/vendedor" routerLinkActive="active" (click)="closeAll()">
+              <i class="bi bi-shop me-1"></i><span>Mi Panel</span>
+            </a>
+          </li>
+
+          <!-- Acceso PANEL ADMIN -->
+          <li class="nav-item" *ngIf="auth.isAdmin">
+            <a class="nav-link mm-link-admin" routerLink="/admin" routerLinkActive="active" (click)="closeAll()">
+              <i class="bi bi-gear-fill me-1"></i><span>Admin</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Buscador -->
+        <div class="mm-navbar-search">
+          <input type="text" [(ngModel)]="textoBusqueda" (keyup.enter)="buscar()"
+                 placeholder="Buscar productos..." aria-label="Buscar">
+          <button (click)="buscar()" aria-label="Buscar"><i class="bi bi-search"></i></button>
+        </div>
+
+        <!-- Right side -->
+        <ul class="navbar-nav align-items-center gap-lg-3 mm-nav-right">
+
+          <!-- No autenticado -->
+          <ng-container *ngIf="!auth.isAuthenticated">
+            <li class="nav-item">
+              <a class="btn mm-btn-ghost" routerLink="/login" (click)="closeAll()">Ingresar</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn mm-btn-gold-sm" routerLink="/registro" (click)="closeAll()">Crear cuenta</a>
+            </li>
+          </ng-container>
+
+          <!-- Autenticado -->
+          <ng-container *ngIf="auth.isAuthenticated">
+            <!-- Carrito -->
+            <li class="nav-item">
+              <a class="mm-cart-btn" routerLink="/carrito" (click)="closeAll()" aria-label="Carrito">
+                <i class="bi bi-bag"></i>
+                <span *ngIf="cantidadItems > 0" class="mm-cart-badge">{{ cantidadItems }}</span>
+              </a>
+            </li>
+
+            <!-- Dropdown usuario -->
+            <li class="nav-item mm-user-dropdown">
+              <button class="mm-user-btn" type="button" (click)="toggleUsuario($event)">
+                <span class="mm-user-avatar">
+                  {{ auth.usuario?.nombres?.charAt(0) }}{{ auth.usuario?.apellidos?.charAt(0) }}
+                </span>
+                <span class="d-none d-lg-flex flex-column text-start lh-1">
+                  <span class="mm-user-name">{{ auth.usuario?.nombres }}</span>
+                  <span class="mm-user-role">
+                    {{ auth.isAdmin ? 'Administrador' : auth.isVendedor ? 'Vendedor' : 'Cliente' }}
+                  </span>
+                </span>
+                <i class="bi bi-chevron-down ms-1 d-none d-lg-inline" style="font-size:.7rem;"></i>
+              </button>
+
+              <div class="mm-dropdown" [class.show]="menuUsuario">
+                <div class="mm-dropdown-head">
+                  <div class="fw-bold text-truncate">{{ auth.usuario?.nombres }} {{ auth.usuario?.apellidos }}</div>
+                  <small class="text-muted text-truncate d-block">{{ auth.usuario?.correo }}</small>
+                </div>
+
+                <a *ngIf="auth.isAdmin" class="mm-dropdown-item mm-text-admin" routerLink="/admin" (click)="closeAll()">
+                  <i class="bi bi-gear"></i> Panel Admin
+                </a>
+                <a *ngIf="auth.isVendedor" class="mm-dropdown-item mm-text-vendedor" routerLink="/vendedor" (click)="closeAll()">
+                  <i class="bi bi-shop"></i> Mi Panel Vendedor
+                </a>
+
+                <a class="mm-dropdown-item" routerLink="/perfil" (click)="closeAll()">
+                  <i class="bi bi-person"></i> Mi Perfil
+                </a>
+                <a class="mm-dropdown-item" routerLink="/pedidos" (click)="closeAll()">
+                  <i class="bi bi-receipt"></i> Mis Pedidos
+                </a>
+                <div class="mm-dropdown-divider"></div>
+                <button class="mm-dropdown-item mm-text-danger" (click)="logout()">
+                  <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </button>
+              </div>
+            </li>
+          </ng-container>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

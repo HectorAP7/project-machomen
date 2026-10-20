@@ -1,0 +1,221 @@
+<!-- Breadcrumb -->
+<nav class="py-3 px-4 border-bottom bg-white" style="font-size:.78rem;">
+  <div class="container">
+    <a routerLink="/catalogo" class="text-muted text-decoration-none text-uppercase">Colección</a>
+    <span class="mx-2 text-muted">/</span>
+    <span class="text-uppercase fw-bold">{{ producto?.descripcion || 'Cargando...' }}</span>
+  </div>
+</nav>
+
+<!-- Error -->
+<div *ngIf="errorCarga && !cargando" class="container text-center py-5">
+  <i class="fa-solid fa-circle-exclamation fa-3x mb-3" style="color:#ef4444;opacity:.6;"></i>
+  <p class="fw-bold text-muted">No se pudo cargar el producto.</p>
+  <p class="text-muted small">Verifica que los servicios estén activos.</p>
+  <button (click)="cargar()" class="btn btn-dark rounded-0 px-4 fw-bold text-uppercase me-2">
+    <i class="fa-solid fa-rotate-right me-2"></i>Reintentar
+  </button>
+  <a routerLink="/catalogo" class="btn btn-outline-secondary rounded-0 px-4 fw-bold text-uppercase">
+    Volver al catálogo
+  </a>
+</div>
+
+<!-- Loading -->
+<div *ngIf="cargando" class="container text-center py-5">
+  <div class="spinner-border" style="color:#c9a84c;width:3rem;height:3rem;"></div>
+  <p class="text-muted mt-3">Cargando producto...</p>
+</div>
+
+<!-- Producto -->
+<div *ngIf="!cargando && producto" class="container my-5">
+  <div class="row g-5 align-items-start">
+
+    <!-- IMAGEN con efecto zoom + lightbox -->
+    <div class="col-md-5">
+      <div class="mm-zoom-wrap" (mousemove)="onZoomMove($event)" (mouseleave)="zoomActivo=false"
+           (mouseenter)="zoomActivo=true" (click)="abrirLightbox()">
+        <img [src]="producto.imagen || 'https://via.placeholder.com/600x700?text=MachoMen'"
+             [alt]="producto.descripcion"
+             class="mm-zoom-img" [class.zoomed]="zoomActivo"
+             [style.transform-origin]="zoomOrigin"
+             onerror="this.src='https://via.placeholder.com/600x700?text=MachoMen'">
+        <span class="mm-zoom-hint"><i class="bi bi-arrows-fullscreen"></i> Ampliar</span>
+      </div>
+      <div class="mt-2 text-center">
+        <span class="badge rounded-0 text-uppercase px-3 py-2"
+              style="background:#f5f5f5;color:#666;font-size:.62rem;letter-spacing:.1em;">
+          {{ producto.categoria?.descripcion }}
+        </span>
+      </div>
+    </div>
+
+    <!-- DETALLE -->
+    <div class="col-md-7">
+
+      <h1 class="fw-bold text-uppercase mb-2" style="font-family:'Cinzel',serif;font-size:1.8rem;letter-spacing:.03em;">
+        {{ producto.descripcion }}
+      </h1>
+
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="fw-bold" style="font-size:2rem;color:#c9a84c;">
+          S/ {{ producto.precio | number:'1.2-2' }}
+        </span>
+        <span *ngIf="producto.stock>0" class="badge rounded-0 px-3 py-2"
+              style="background:#d1fae5;color:#065f46;font-size:.72rem;">
+          <i class="fa-solid fa-circle-check me-1"></i>Disponible ({{ producto.stock }} unidades)
+        </span>
+        <span *ngIf="producto.stock===0" class="badge rounded-0 px-3 py-2"
+              style="background:#fee2e2;color:#991b1b;font-size:.72rem;">
+          <i class="fa-solid fa-circle-xmark me-1"></i>Agotado
+        </span>
+      </div>
+
+      <hr style="border-color:#eee;">
+
+      <!-- TALLAS CASACA - selección obligatoria -->
+      <div *ngIf="tallasCasaca.length>0" class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="fw-bold small text-uppercase mb-0" style="letter-spacing:.1em;">
+            Talla
+            <span *ngIf="tallaSeleccionada" class="ms-2 fw-normal" style="color:#c9a84c;">{{ tallaSeleccionada }}</span>
+          </p>
+          <span *ngIf="!tallaSeleccionada" class="small text-danger fw-bold">
+            <i class="fa-solid fa-exclamation-circle me-1"></i>Selecciona tu talla
+          </span>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button *ngFor="let t of tallasCasaca" (click)="seleccionarTalla(t)"
+                  [class]="tallaSeleccionada===t
+                    ? 'btn btn-dark rounded-0 fw-bold px-4 py-2'
+                    : 'btn btn-outline-secondary rounded-0 px-4 py-2'">
+            {{ t }}
+          </button>
+        </div>
+      </div>
+
+      <!-- TALLAS ZAPATO - selección obligatoria -->
+      <div *ngIf="tallasZapato.length>0" class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <p class="fw-bold small text-uppercase mb-0" style="letter-spacing:.1em;">
+            Número
+            <span *ngIf="tallaSeleccionada" class="ms-2 fw-normal" style="color:#c9a84c;">{{ tallaSeleccionada }}</span>
+          </p>
+          <span *ngIf="!tallaSeleccionada" class="small text-danger fw-bold">
+            <i class="fa-solid fa-exclamation-circle me-1"></i>Selecciona tu número
+          </span>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button *ngFor="let t of tallasZapato" (click)="seleccionarTalla(t)"
+                  [class]="tallaSeleccionada===t
+                    ? 'btn btn-dark rounded-0 fw-bold px-3 py-2'
+                    : 'btn btn-outline-secondary rounded-0 px-3 py-2'">
+            {{ t }}
+          </button>
+        </div>
+      </div>
+
+      <!-- CANTIDAD -->
+      <div class="mb-4" *ngIf="producto.stock>0">
+        <p class="fw-bold small text-uppercase mb-2" style="letter-spacing:.1em;">Cantidad</p>
+        <div class="d-flex align-items-center gap-3">
+          <div class="input-group" style="width:140px;">
+            <button class="btn btn-outline-dark rounded-0" (click)="decrementar()" [disabled]="cantidad<=1">
+              <i class="fa-solid fa-minus" style="font-size:.75rem;"></i>
+            </button>
+            <input type="number" [(ngModel)]="cantidad" min="1" [max]="producto.stock"
+                   class="form-control text-center rounded-0 border-dark fw-bold">
+            <button class="btn btn-outline-dark rounded-0" (click)="incrementar()" [disabled]="cantidad>=producto.stock">
+              <i class="fa-solid fa-plus" style="font-size:.75rem;"></i>
+            </button>
+          </div>
+          <span class="text-muted small">Máx. {{ producto.stock }}</span>
+        </div>
+      </div>
+
+      <!-- BOTÓN AÑADIR -->
+      <div class="d-grid mb-3">
+        <button *ngIf="producto.stock>0" (click)="agregar()"
+                class="btn btn-dark rounded-0 py-3 fw-bold text-uppercase"
+                style="font-size:.95rem;letter-spacing:.06em;">
+          <i class="fa-solid fa-bag-shopping me-2"></i>Añadir a la Bolsa
+        </button>
+        <button *ngIf="producto.stock===0"
+                class="btn btn-secondary rounded-0 py-3 fw-bold text-uppercase disabled">
+          <i class="fa-solid fa-ban me-2"></i>Producto Agotado
+        </button>
+      </div>
+
+      <!-- Aviso si no está logueado -->
+      <div *ngIf="!auth.isAuthenticated"
+           class="alert rounded-0 py-2 d-flex align-items-center gap-2 mb-3"
+           style="background:#fff3cd;border:1px solid #f59e0b;color:#92400e;font-size:.82rem;">
+        <i class="fa-solid fa-lock"></i>
+        <span>
+          <a routerLink="/login" class="fw-bold" style="color:#92400e;">Inicia sesión</a>
+          para añadir al carrito y comprar.
+        </span>
+      </div>
+
+      <!-- CARACTERÍSTICAS -->
+      <div *ngIf="lineasCaracteristicas.length>0" class="mt-4 pt-4" style="border-top:1px solid #eee;">
+        <h6 class="text-uppercase fw-bold small mb-3" style="letter-spacing:.1em;">
+          <i class="fa-solid fa-list-check me-2" style="color:#c9a84c;"></i>Características
+        </h6>
+        <ul class="list-unstyled mb-0">
+          <li *ngFor="let l of lineasCaracteristicas" class="d-flex align-items-start gap-2 mb-2 small">
+            <i class="fa-solid fa-check mt-1 flex-shrink-0" style="color:#22c55e;font-size:.75rem;"></i>
+            <span>{{ l }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Entrega -->
+      <div class="mt-4 p-3 d-flex gap-4" style="background:#fafafa;border:1px solid #eee;">
+        <div class="d-flex align-items-center gap-2 small text-muted">
+          <i class="fa-solid fa-truck" style="color:#c9a84c;font-size:1.1rem;"></i>
+          <span>Envío gratis &gt; S/250</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 small text-muted">
+          <i class="fa-solid fa-shield-halved" style="color:#c9a84c;font-size:1.1rem;"></i>
+          <span>Pago 100% seguro</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX: imagen a pantalla completa -->
+<div *ngIf="lightboxAbierto" class="mm-lightbox" (click)="lightboxAbierto=false">
+  <button class="mm-lightbox-close" (click)="lightboxAbierto=false"><i class="bi bi-x-lg"></i></button>
+  <img [src]="producto?.imagen || 'https://via.placeholder.com/600x700?text=MachoMen'"
+       [alt]="producto?.descripcion" class="mm-lightbox-img" (click)="$event.stopPropagation()">
+</div>
+
+<style>
+/* Zoom interactivo al pasar el mouse */
+.mm-zoom-wrap { position:relative; overflow:hidden; background:#f8f7f4; cursor:zoom-in; }
+.mm-zoom-img { width:100%; object-fit:cover; aspect-ratio:4/5; display:block; transition:transform .15s ease; }
+.mm-zoom-img.zoomed { transform:scale(1.9); }
+.mm-zoom-hint {
+  position:absolute; bottom:12px; right:12px; background:rgba(17,17,17,.82); color:#fff;
+  font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  padding:.4rem .7rem; opacity:0; transition:opacity .25s ease; pointer-events:none;
+}
+.mm-zoom-wrap:hover .mm-zoom-hint { opacity:1; }
+.mm-zoom-hint i { color:#c9a84c; }
+
+/* Lightbox pantalla completa */
+.mm-lightbox {
+  position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:3000;
+  display:flex; align-items:center; justify-content:center; padding:2rem;
+  animation:mmFadeIn .25s ease; cursor:zoom-out;
+}
+.mm-lightbox-img { max-width:90vw; max-height:90vh; object-fit:contain; animation:mmFadeUp .3s ease; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+.mm-lightbox-close {
+  position:absolute; top:1.5rem; right:1.5rem; width:46px; height:46px;
+  background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.3); color:#fff;
+  font-size:1.2rem; cursor:pointer; transition:all .2s ease;
+}
+.mm-lightbox-close:hover { background:#c9a84c; color:#111; border-color:#c9a84c; }
+</style>

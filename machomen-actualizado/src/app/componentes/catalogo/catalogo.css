@@ -1,0 +1,159 @@
+/* ════ CATÁLOGO MACHOMEN ════ */
+
+/* HERO */
+.mm-cat-hero {
+  position: relative;
+  padding: 4.5rem 0;
+  background: linear-gradient(135deg, #0a0a0a, #1f1f1f);
+  overflow: hidden;
+}
+.mm-cat-hero-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(201,168,76,.12), transparent 60%);
+}
+.mm-cat-hero-title {
+  font-family: 'Cinzel', serif; font-weight: 700;
+  color: #fff; text-transform: uppercase;
+  letter-spacing: .05em; font-size: clamp(1.8rem, 4vw, 3rem);
+  margin-bottom: .5rem;
+}
+
+/* FILTROS */
+.mm-filtros { background: #fff; }
+.mm-filtro-block { margin-bottom: 1.75rem; }
+.mm-filtro-label {
+  display: block; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: .72rem; color: #888; margin-bottom: .65rem;
+}
+
+/* Buscador */
+.mm-search { position: relative; display: flex; align-items: center; }
+.mm-search i.bi-search { position: absolute; left: 12px; color: #aaa; font-size: .9rem; }
+.mm-search input {
+  width: 100%; border: 1.5px solid #e2e2e2;
+  padding: .6rem .6rem .6rem 2.2rem;
+  font-size: .85rem; border-radius: 0;
+  transition: border-color .2s;
+}
+.mm-search input:focus { outline: none; border-color: var(--mm-gold); }
+.mm-search-clear {
+  position: absolute; right: 8px; background: none; border: none;
+  color: #999; cursor: pointer; font-size: .8rem;
+}
+
+/* Pills de categoría */
+.mm-cat-pill {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: #fff; border: 1.5px solid #ececec;
+  padding: .6rem .85rem; margin-bottom: .4rem;
+  font-size: .78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .04em; color: #555; cursor: pointer;
+  transition: all .2s var(--mm-ease);
+}
+.mm-cat-pill:hover { border-color: var(--mm-gold); color: #000; }
+.mm-cat-pill.active { background: var(--mm-ink); border-color: var(--mm-ink); color: #fff; }
+.mm-cat-pill.active .mm-cat-count { color: var(--mm-gold); }
+.mm-cat-count { font-size: .72rem; font-weight: 400; color: #aaa; }
+
+/* Slider de precio */
+.mm-range { width: 100%; accent-color: var(--mm-gold); cursor: pointer; }
+
+/* Banner filtros */
+.mm-filtro-banner { background: var(--mm-ink); color: #fff; padding: 1.5rem; text-align: center; }
+
+/* Select de orden */
+.mm-select {
+  border: 1.5px solid #e2e2e2; border-radius: 0;
+  padding: .45rem 2rem .45rem .75rem;
+  font-size: .8rem; font-weight: 600; color: #333;
+  background: #fff; cursor: pointer;
+}
+.mm-select:focus { outline: none; border-color: var(--mm-gold); }
+
+/* TARJETA PRODUCTO */
+.mm-prod {
+  background: #fff; border: 1px solid #eee;
+  display: flex; flex-direction: column;
+  transition: transform .3s var(--mm-ease), box-shadow .3s var(--mm-ease);
+  overflow: hidden;
+}
+.mm-prod:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(0,0,0,.12); }
+.mm-prod-media { position: relative; aspect-ratio: 1/1; overflow: hidden; background: #f5f5f5; }
+.mm-prod-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--mm-ease); }
+.mm-prod:hover .mm-prod-media img { transform: scale(1.08); }
+
+.mm-prod-tag {
+  position: absolute; top: 10px; right: 10px;
+  font-size: .6rem; font-weight: 700; text-transform: uppercase;
+  padding: .25rem .5rem; color: #fff; letter-spacing: .04em;
+}
+.mm-tag-low { background: #ef4444; }
+
+.mm-prod-soldout {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,.72);
+  display: flex; align-items: center; justify-content: center;
+}
+.mm-prod-soldout span {
+  background: var(--mm-ink); color: #fff;
+  padding: .5rem 1.2rem; font-weight: 700; text-transform: uppercase;
+  font-size: .75rem; letter-spacing: .08em;
+}
+
+/* Quick add que sube al hover */
+.mm-prod-quickadd {
+  position: absolute; left: 10px; right: 10px; bottom: 10px;
+  background: var(--mm-ink); color: #fff; border: none;
+  padding: .55rem; font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  transform: translateY(140%); opacity: 0;
+  transition: all .3s var(--mm-ease); cursor: pointer;
+}
+.mm-prod:hover .mm-prod-quickadd { transform: translateY(0); opacity: 1; }
+.mm-prod-quickadd:hover { background: var(--mm-gold); color: #111; }
+
+.mm-prod-body { padding: .9rem; display: flex; flex-direction: column; flex: 1; }
+.mm-prod-cat { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: #aaa; margin-bottom: .25rem; }
+.mm-prod-name {
+  font-size: .82rem; font-weight: 700; text-transform: uppercase;
+  color: #1a1a1a; line-height: 1.3; margin-bottom: .4rem;
+  min-height: 2.1em;
+}
+.mm-prod-tallas { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: .5rem; }
+.mm-prod-tallas span {
+  font-size: .58rem; font-weight: 700; color: #777;
+  background: #f5f5f5; border: 1px solid #e0e0e0; padding: 1px 5px;
+}
+.mm-prod-price { font-size: 1.05rem; font-weight: 700; color: var(--mm-gold-dark); margin: auto 0 0; }
+
+/* PAGINACIÓN */
+.mm-pagination { display: flex; justify-content: center; align-items: center; gap: .35rem; }
+.mm-page-btn {
+  min-width: 40px; height: 40px;
+  border: 1.5px solid #e2e2e2; background: #fff;
+  font-size: .85rem; font-weight: 700; color: #444;
+  cursor: pointer; transition: all .2s var(--mm-ease);
+}
+.mm-page-btn:hover:not(:disabled) { border-color: var(--mm-ink); color: #000; }
+.mm-page-btn.active { background: var(--mm-ink); border-color: var(--mm-ink); color: #fff; }
+.mm-page-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ALERTA ERROR */
+.mm-alert-error {
+  display: flex; align-items: center; gap: .8rem;
+  background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b;
+  padding: 1rem; margin-bottom: 1.5rem;
+}
+
+/* ── EFECTO AL PRESIONAR LA FOTO (catálogo) ── */
+.mm-prod-media { cursor: pointer; }
+.mm-prod-media:active img { transform: scale(.96); transition: transform .12s ease; }
+.mm-prod-media::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(201,168,76,0); transition: background .2s ease; pointer-events: none;
+}
+.mm-prod-media:active::after { background: rgba(201,168,76,.15); }
+
+/* Destello al hacer clic (ripple dorado) */
+@keyframes mmRipple { 0% { box-shadow: inset 0 0 0 0 rgba(201,168,76,.5); } 100% { box-shadow: inset 0 0 0 40px rgba(201,168,76,0); } }
+.mm-prod-media:active { animation: mmRipple .4s ease-out; }
