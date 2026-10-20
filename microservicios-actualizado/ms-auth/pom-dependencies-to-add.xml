@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================
+     DEPENDENCIAS A AGREGAR en ms-auth/pom.xml
+     (dentro del bloque <dependencies>)
+     ============================================================ -->
+
+<!--
+  1. OAuth2 Resource Server (valida tokens de Google y genera JWT propio)
+  2. OAuth2 Client (permite flujo de login con Google desde Spring)
+  3. WebClient reactivo (para verificar token de Google)
+-->
+
+<!-- Agrega estas 3 dependencias en tu pom.xml de ms-auth -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-client</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>

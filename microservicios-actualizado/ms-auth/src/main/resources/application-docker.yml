@@ -1,0 +1,33 @@
+# Profile: docker — URLs para contenedores Docker/Kubernetes
+spring:
+  datasource:
+    url: jdbc:mysql://${SPRING_DATASOURCE_HOST:machomen-mysql}:3306/bd_machomen?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:mysql}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:machomen-rabbitmq}
+    port: 5672
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://machomen-eureka:8761/eureka/}
+
+jwt:
+  secret: ${JWT_SECRET:MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!}
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers,retries
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true

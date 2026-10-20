@@ -1,0 +1,336 @@
+-- =============================================================================
+--  MachoMen — Base de Datos Completa
+--  Archivo: bd_machomen_COMPLETO.sql
+--  Ejecutar en MySQL Workbench: Abre el archivo → Run All (Ctrl+Shift+Enter)
+-- =============================================================================
+
+DROP DATABASE IF EXISTS bd_machomen;
+CREATE DATABASE bd_machomen
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE bd_machomen;
+
+-- =============================================================================
+-- TABLAS
+-- =============================================================================
+
+-- 1. DISTRITOS
+CREATE TABLE tb_distrito (
+    iddistrito  INT          AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(50)  NOT NULL
+);
+
+-- 2. CATEGORÍAS
+CREATE TABLE tb_categoria (
+    idcategoria INT          AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(50)  NOT NULL,
+    estado      INT          DEFAULT 1
+);
+
+-- 3. USUARIOS
+CREATE TABLE tb_usuario (
+    idusuario  INT          AUTO_INCREMENT PRIMARY KEY,
+    nombres    VARCHAR(100) NOT NULL,
+    apellidos  VARCHAR(100) NOT NULL,
+    dni        CHAR(8)      NOT NULL UNIQUE,
+    correo     VARCHAR(100) NOT NULL UNIQUE,
+    clave      VARCHAR(255) NOT NULL,
+    direccion  VARCHAR(200) NULL,
+    celular    VARCHAR(15)  NULL,
+    iddistrito INT          NULL,
+    rol        INT          NOT NULL DEFAULT 2,
+    estado     INT          DEFAULT 1,
+    fecha_reg  DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (iddistrito) REFERENCES tb_distrito(iddistrito)
+);
+
+-- 4. PRODUCTOS
+CREATE TABLE tb_producto (
+    idproducto      INT            AUTO_INCREMENT PRIMARY KEY,
+    descripcion     VARCHAR(100)   NOT NULL UNIQUE,
+    stock           INT            NOT NULL DEFAULT 0,
+    precio          DECIMAL(10,2)  NOT NULL,
+    imagen          VARCHAR(255)   NULL,
+    talla_json      TEXT           NULL,
+    caracteristicas TEXT           NULL,
+    idcategoria     INT            NOT NULL,
+    estado          INT            DEFAULT 1,
+    FOREIGN KEY (idcategoria) REFERENCES tb_categoria(idcategoria)
+);
+
+-- 5. BOLETA (cabecera)
+CREATE TABLE tb_boleta (
+    idboleta           INT           AUTO_INCREMENT PRIMARY KEY,
+    fecha              DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    idusuario          INT           NOT NULL,
+    tipo_pago          INT           NOT NULL DEFAULT 1,
+    nro_operacion      VARCHAR(50)   NULL,
+    direccion_envio    VARCHAR(200)  NOT NULL,
+    iddistrito         INT           NOT NULL,
+    importe_productos  DECIMAL(10,2) DEFAULT 0.00,
+    importe_envio      DECIMAL(10,2) DEFAULT 0.00,
+    importe_neto       DECIMAL(10,2) DEFAULT 0.00,
+    importe_igv        DECIMAL(10,2) DEFAULT 0.00,
+    importe_total      DECIMAL(10,2) DEFAULT 0.00,
+    estado             INT           DEFAULT 1,
+    FOREIGN KEY (idusuario)  REFERENCES tb_usuario(idusuario),
+    FOREIGN KEY (iddistrito) REFERENCES tb_distrito(iddistrito)
+);
+
+ALTER TABLE tb_boleta AUTO_INCREMENT = 1001;
+
+-- 6. BOLETA DETALLE
+CREATE TABLE tb_boleta_det (
+    idboleta   INT           NOT NULL,
+    idproducto INT           NOT NULL,
+    cantidad   INT           NOT NULL,
+    preciovta  DECIMAL(10,2) NOT NULL,
+    importe    DECIMAL(10,2) NOT NULL,
+    talla      VARCHAR(10)   NULL,
+    PRIMARY KEY (idboleta, idproducto),
+    FOREIGN KEY (idboleta)   REFERENCES tb_boleta(idboleta),
+    FOREIGN KEY (idproducto) REFERENCES tb_producto(idproducto)
+);
+
+
+-- 7. CUPONES DE DESCUENTO
+CREATE TABLE tb_cupon (
+    idcupon     INT           AUTO_INCREMENT PRIMARY KEY,
+    codigo      VARCHAR(30)   NOT NULL UNIQUE,
+    tipo        INT           NOT NULL DEFAULT 1,
+    valor       DECIMAL(10,2) NOT NULL,
+    minimo      DECIMAL(10,2) DEFAULT 0,
+    usos_max    INT           DEFAULT 0,
+    usos        INT           DEFAULT 0,
+    estado      INT           DEFAULT 1
+);
+
+-- =============================================================================
+-- DATOS
+-- =============================================================================
+
+-- DISTRITOS (43 de Lima)
+INSERT INTO tb_distrito (descripcion) VALUES
+('Cercado de Lima'),('Ancón'),('Ate'),('Barranco'),('Breña'),
+('Carabayllo'),('Chaclacayo'),('Chorrillos'),('Cieneguilla'),('Comas'),
+('El Agustino'),('Independencia'),('Jesús María'),('La Molina'),('La Victoria'),
+('Lince'),('Los Olivos'),('Lurigancho'),('Lurín'),('Magdalena del Mar'),
+('Pueblo Libre'),('Miraflores'),('Pachacámac'),('Pucusana'),('Puente Piedra'),
+('Punta Hermosa'),('Punta Negra'),('Rímac'),('San Bartolo'),('San Borja'),
+('San Isidro'),('San Juan de Lurigancho'),('San Juan de Miraflores'),('San Luis'),
+('San Martín de Porres'),('San Miguel'),('Santa Anita'),('Santa María del Mar'),
+('Santa Rosa'),('Santiago de Surco'),('Surquillo'),
+('Villa El Salvador'),('Villa María del Triunfo');
+
+-- CATEGORÍAS
+INSERT INTO tb_categoria (descripcion, estado) VALUES
+('Casacas',1), ('Zapatos',1), ('Billeteras',1);
+
+
+-- CUPONES DE DESCUENTO
+INSERT INTO tb_cupon (codigo, tipo, valor, minimo, usos_max, estado) VALUES
+('MACHO10',    1, 10.00,   0, 0, 1),
+('BIENVENIDO', 1, 15.00, 200, 0, 1),
+('CUERO20',    2, 20.00, 150, 0, 1);
+
+-- PRODUCTOS (con talla_json y caracteristicas)
+INSERT INTO tb_producto (descripcion, stock, precio, idcategoria, imagen, talla_json, caracteristicas, estado) VALUES
+('Casaca Negra Clásica',    5,  150.00, 1, 'https://corzo.pe/DSWI/img/prod/1.jpg',  '{"casaca":["S","M","L","XL"]}', '- 100% cuero genuino\n- Hecho en Perú\n- Cierre metálico', 1),
+('Casaca Marrón Casual',    2,  120.00, 1, 'https://corzo.pe/DSWI/img/prod/2.jpg',  '{"casaca":["S","M","L"]}',      '- Cuero vacuno\n- Interior de tela\n- Bolsillos laterales', 1),
+('Casaca Azul Deportiva',   6,  180.00, 1, 'https://corzo.pe/DSWI/img/prod/3.jpg',  '{"casaca":["M","L","XL"]}',     '- Cuero sintético de alta calidad\n- Ideal para uso diario', 1),
+('Casaca Roja Invierno',    1,  200.00, 1, 'https://corzo.pe/DSWI/img/prod/4.jpg',  '{"casaca":["S","M","L","XL"]}', '- Cuero premium\n- Forro de borrego\n- Resistente al frío', 1),
+('Casaca Verde Militar',    3,  170.00, 1, 'https://corzo.pe/DSWI/img/prod/5.jpg',  '{"casaca":["M","L","XL"]}',     '- Estilo militar\n- Cuero genuino\n- Múltiples bolsillos', 1),
+('Zapato Elegante Negro',   6,  120.00, 2, 'https://corzo.pe/DSWI/img/prod/6.jpg',  '{"zapato":[38,39,40,41,42,43]}','- Cuero genuino\n- Suela de cuero\n- Acabado brillante', 1),
+('Zapato Casual Marrón',   30,  100.00, 2, 'https://corzo.pe/DSWI/img/prod/7.jpg',  '{"zapato":[38,39,40,41,42,43,44]}','- Cuero vacuno\n- Cómodo para el día a día', 1),
+('Zapato Deportivo Azul',  50,  130.00, 2, 'https://corzo.pe/DSWI/img/prod/8.jpg',  '{"zapato":[38,39,40,41,42,43,44,45]}','- Suela de goma antideslizante\n- Muy liviano', 1),
+('Zapato Formal Negro',    35,  150.00, 2, 'https://corzo.pe/DSWI/img/prod/9.jpg',  '{"zapato":[39,40,41,42,43]}',   '- Cuero importado\n- Ideal para oficina', 1),
+('Zapato Botín Café',      20,  140.00, 2, 'https://corzo.pe/DSWI/img/prod/10.jpg', '{"zapato":[38,39,40,41,42,43]}','- Botín de cuero café\n- Suela gruesa', 1),
+('Billetera Marrón Compacta',60, 50.00, 3, 'https://corzo.pe/DSWI/img/prod/11.jpg', NULL, '- Cuero genuino\n- 6 compartimentos\n- Compacta y ligera', 1),
+('Billetera Negra Elegante', 40, 60.00, 3, 'https://corzo.pe/DSWI/img/prod/12.jpg', NULL, '- Cuero premium\n- Porta monedas\n- Diseño ejecutivo', 1),
+('Billetera Azul Moderna',   70, 55.00, 3, 'https://corzo.pe/DSWI/img/prod/13.jpg', NULL, '- Cuero sintético\n- 8 tarjeteros\n- Color azul marino', 1),
+('Billetera Roja Casual',    55, 65.00, 3, 'https://corzo.pe/DSWI/img/prod/14.jpg', NULL, '- Cuero genuino rojo\n- Cierre con botón', 1),
+('Billetera Negra Deportiva',45, 58.00, 3, 'https://corzo.pe/DSWI/img/prod/15.jpg', NULL, '- Cuero resistente\n- Estilo deportivo\n- Anti-RFID', 1);
+
+-- USUARIOS (clave BCrypt de "123456" para todos)
+INSERT INTO tb_usuario (nombres, apellidos, correo, clave, dni, iddistrito, direccion, celular, fecha_reg, rol, estado) VALUES
+('Admin',       'General',      'admin@machomen.com',    '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000011', 22, 'Av. Larco 1020',              '999000001', '2025-06-08 00:00:00', 1, 1),
+('Diego',       'Bertie',       'diego@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000012', 39, 'Jr. Caminos del Inca 450',   '999000002', '2025-08-10 00:00:00', 2, 1),
+('Jorge',       'Benavides',    'jorge.jb@gmail.com',    '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000013',  4, 'Av. Grau 200',               '999000003', '2025-09-28 00:00:00', 2, 1),
+('Patricia',    'Portocarrero', 'patty.p@gmail.com',     '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000014', 35, 'Av. La Marina 1500',         '999000004', '2025-10-02 00:00:00', 2, 1),
+('Saskia',      'Bernaola',     'saskia.b@gmail.com',    '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000015', 13, 'Av. San Felipe 600',         '999000005', '2025-10-12 00:00:00', 2, 1),
+('Katia',       'Palma',        'katia.p@gmail.com',     '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000016', 16, 'Av. Arenales 2300',          '999000006', '2025-10-20 00:00:00', 2, 1),
+('Ricardo',     'Moran',        'ricardo.m@gmail.com',   '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000017', 17, 'Av. Antunez de Mayolo 800',  '999000007', '2025-10-30 00:00:00', 2, 1),
+('Maricarmen',  'Marin',        'mari.m@gmail.com',      '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000018', 30, 'Av. Javier Prado Este 2500', '999000008', '2025-11-05 00:00:00', 2, 1),
+('Adolfo',      'Chuiman',      'adolfo.ch@gmail.com',   '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000019', 34, 'Av. Perú 1800',              '999000009', '2025-11-15 00:00:00', 2, 1),
+('Carlos',      'Vega',         'carlos@gmail.com',      '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000004',  1, 'Jr. De la Unión 555',        '999000010', '2025-11-21 00:00:00', 2, 1),
+('Luis',        'Paredes',      'luis@gmail.com',        '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000005', 16, 'Av. Arequipa 1200',          '999000011', '2025-11-23 00:00:00', 2, 1),
+('Elena',       'Mendoza',      'elena@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000006',  5, 'Jr. Puno 440',               '999000012', '2025-11-25 00:00:00', 2, 1),
+('Mario',       'Estrada',      'mario@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000007', 13, 'Av. Brasil 800',             '999000013', '2025-12-01 00:00:00', 2, 1),
+('Camila',      'Huerta',       'camila@gmail.com',      '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000008', 17, 'Av. Universitaria 5500',    '999000014', '2025-12-04 00:00:00', 2, 1),
+('Renato',      'Vargas',       'renato@gmail.com',      '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000009', 31, 'Calle Las Begonias 120',    '999000015', '2025-12-09 00:00:00', 2, 1),
+('Paola',       'Reyes',        'paola@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000010', 36, 'Av. La Marina 2000',         '999000016', '2025-12-15 00:00:00', 2, 1),
+('Gisela',      'Valcarcel',    'gisela.v@gmail.com',    '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000020', 14, 'Av. Raul Ferrero 1200',     '999000017', '2025-12-20 00:00:00', 2, 1),
+('Magaly',      'Medina',       'magaly.m@gmail.com',    '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000021', 31, 'Av. Salaverry 1500',        '999000018', '2025-12-24 00:00:00', 2, 1),
+('Beto',        'Ortiz',        'beto.o@gmail.com',      '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000022',  1, 'Jr. Huallaga 300',           '999000019', '2025-12-28 00:00:00', 2, 1),
+('Jaime',       'Bayly',        'jaime.b@gmail.com',     '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000023', 31, 'Av. Pezet 500',             '999000020', '2025-12-30 00:00:00', 2, 1),
+('Roman',       'Riquelme',     'roman@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000024', 17, 'Av. los rosas 200',         '999000021', '2026-01-05 00:00:00', 2, 1),
+('Juan',        'Perez',        'jaime@gmail.com',       '$2a$10$UxIhtIxYkpL0.NIv17Jwducasz2kFxL6kw1zzsAn5Rg./si8wIe6K', '40000025', 19, 'Av. los mas 100',           '999000022', '2026-01-10 00:00:00', 2, 1);
+
+-- =============================================================================
+-- BOLETAS
+-- =============================================================================
+
+INSERT INTO tb_boleta (fecha, idusuario, tipo_pago, nro_operacion, importe_productos, importe_envio, importe_neto, importe_igv, importe_total, estado, direccion_envio, iddistrito) VALUES
+('2025-09-05 10:00:00', 2, 1, 'OP-001',    150.00, 10.00, 135.59, 24.41, 160.00, 2, 'Av. Larco 1020',              22),
+('2025-09-06 11:00:00', 2, 1, 'VISA-901',  150.00, 10.00, 135.59, 24.41, 160.00, 2, 'Av. Larco 1020',              22),
+('2025-09-15 09:30:00', 2, 2, 'YAPE-991',   50.00, 10.00,  50.85,  9.15,  60.00, 2, 'Jr. Caminos del Inca 450',   39),
+('2025-09-16 14:00:00', 2, 2, 'YAPE-NEW1',  50.00, 10.00,  50.85,  9.15,  60.00, 2, 'Av. Larco 1020',              22),
+('2025-09-17 16:00:00', 2, 1, 'VISA-NEW2', 270.00,  0.00, 228.81, 41.19, 270.00, 2, 'Jr. Caminos del Inca 450',   39),
+('2025-09-20 10:00:00', 2, 3, 'PLIN-NEW3',  65.00, 10.00,  63.56, 11.44,  75.00, 2, 'Av. San Felipe 600',          13),
+('2025-09-22 11:00:00', 3, 3, 'PLIN-ERR',  120.00, 10.00, 110.17, 19.83, 130.00, 3, 'Av. Grau 200',                 4),
+('2025-09-25 09:00:00', 3, 2, 'YAPE-882',  110.00, 10.00, 101.69, 18.31, 120.00, 2, 'Av. Grau 200',                 4),
+('2025-09-28 15:00:00', 4, 1, 'VISA-123',  180.00, 10.00, 161.02, 28.98, 190.00, 2, 'Av. La Marina 1500',          35),
+('2025-09-30 08:00:00', 3, 2, 'YAPE-112',   55.00, 10.00,  55.08,  9.92,  65.00, 2, 'Av. San Felipe 600',          13),
+('2025-10-02 10:00:00', 5, 1, 'VISA-888',  100.00, 10.00,  93.22, 16.78, 110.00, 2, 'Av. Larco 1020',              22),
+('2025-10-12 12:00:00', 6, 3, 'PLIN-777',  180.00, 10.00, 161.02, 28.98, 190.00, 2, 'Av. Arenales 2300',           16),
+('2025-10-20 09:00:00', 7, 1, 'MC-001',     65.00, 10.00,  63.56, 11.44,  75.00, 2, 'Av. Antunez de Mayolo 800',  17),
+('2025-10-21 10:00:00', 7, 2, 'YAPE-771',  170.00, 10.00, 152.54, 27.46, 180.00, 2, 'Av. Antunez de Mayolo 800',  17),
+('2025-10-21 11:00:00', 4, 1, 'VISA-332',  250.00,  0.00, 211.86, 38.14, 250.00, 2, 'Av. Javier Prado Este 2500', 30),
+('2025-10-22 08:00:00', 3, 3, 'PLIN-FAIL', 200.00, 10.00, 177.97, 32.03, 210.00, 3, 'Av. Perú 1800',              34),
+('2025-10-22 14:00:00', 8, 2, 'YAPE-333',  200.00, 10.00, 177.97, 32.03, 210.00, 2, 'Av. Javier Prado Este 2500', 30),
+('2025-10-30 16:00:00', 9, 1, 'VISA-404',  130.00, 10.00, 118.64, 21.36, 140.00, 2, 'Av. Perú 1800',              34),
+('2025-11-05 09:00:00',10, 1, '07653098',  300.00,  0.00, 254.24, 45.76, 300.00, 2, 'Jr. De la Unión 555',          1),
+('2025-11-10 10:00:00', 7, 1, 'VISA-NEW4', 180.00, 10.00, 161.02, 28.98, 190.00, 2, 'Av. Antunez de Mayolo 800',  17),
+('2025-11-12 11:00:00', 9, 2, 'YAPE-NEW5', 100.00, 10.00,  93.22, 16.78, 110.00, 2, 'Jr. De la Unión 555',          1),
+('2025-11-14 08:00:00',10, 1, 'VISA-FAIL', 200.00, 10.00, 177.97, 32.03, 210.00, 3, 'Jr. Puno 440',                 5),
+('2025-11-10 12:00:00', 4, 3, 'PLIN-ERR2', 120.00, 10.00, 110.17, 19.83, 130.00, 3, 'Av. La Marina 1500',          35),
+('2025-11-15 09:00:00',11, 1, '00983765',  180.00, 10.00, 161.02, 28.98, 190.00, 2, 'Av. Arequipa 1200',           16),
+('2025-11-21 10:00:00',12, 3, '87364765',  423.00,  0.00, 358.47, 64.53, 423.00, 2, 'Jr. Puno 440',                 5),
+('2025-11-21 14:00:00', 6, 1, 'MC-554',    185.00, 10.00, 165.25, 29.75, 195.00, 2, 'Av. Arenales 2300',           16),
+('2025-11-22 09:00:00',10, 2, '78735432',  120.00, 10.00, 110.17, 19.83, 130.00, 2, 'Jr. De la Unión 555',          1),
+('2025-11-23 11:00:00',13, 3, '38740982',  275.00,  0.00, 233.05, 41.95, 275.00, 2, 'Av. Brasil 800',              13),
+('2025-11-25 10:00:00',14, 1, '00265374',  340.00,  0.00, 288.14, 51.86, 340.00, 2, 'Av. Universitaria 5500',      17),
+('2025-11-28 16:00:00',10, 3, 'VISA-ERR',  340.00,  0.00, 288.14, 51.86, 340.00, 2, 'Jr. De la Unión 555',          1),
+('2025-12-01 09:00:00',15, 2, '87337489',  170.00, 10.00, 152.54, 27.46, 180.00, 2, 'Calle Las Begonias 120',      31),
+('2025-12-04 10:00:00',10, 1, '33465283',  280.00,  0.00, 237.29, 42.71, 280.00, 2, 'Av. La Marina 2000',          36),
+('2025-12-04 11:00:00',11, 3, '48736409',  330.00,  0.00, 279.66, 50.34, 330.00, 2, 'Av. Arequipa 1200',           16),
+('2025-12-06 09:00:00',12, 1, 'VISA-001',  150.00, 10.00, 135.59, 24.41, 160.00, 2, 'Av. Raul Ferrero 1200',       14),
+('2025-12-08 10:00:00',11, 2, 'YAPE-URR',   58.00, 10.00,  57.63, 10.37,  68.00, 2, 'Av. Salaverry 1500',          31),
+('2025-12-10 09:00:00', 6, 3, 'PLIN-BTO',  170.00, 10.00, 152.54, 27.46, 180.00, 3, 'Jr. Huallaga 300',             1),
+('2025-12-17 11:00:00', 5, 3, 'PLIN-NEW6', 110.00, 10.00, 101.69, 18.31, 120.00, 2, 'Av. Brasil 800',              13),
+('2025-12-18 10:00:00', 9, 1, 'MC-NEW7',   170.00, 10.00, 152.54, 27.46, 180.00, 2, 'Av. Raul Ferrero 1200',       14),
+('2025-12-20 09:00:00', 3, 2, 'YAPE-NEW8', 150.00, 10.00, 135.59, 24.41, 160.00, 1, 'Av. Salaverry 1500',          31),
+('2025-12-20 10:00:00',10, 1, 'VISA-NEW9',  58.00, 10.00,  57.63, 10.37,  68.00, 1, 'Jr. Huallaga 300',             1),
+('2025-12-20 11:00:00',16, 3, 'PLIN-FIN',  150.00, 10.00, 135.59, 24.41, 160.00, 1, 'Av. Pezet 500',               31),
+('2026-06-05 10:00:00',21, 1, 'YAPE-R01', 3200.00,  0.00,2711.86,488.14,3200.00, 2, 'Av. los rosas 200',           17),
+('2026-06-06 11:00:00',21, 2, 'YAPE-R02', 3200.00,  0.00,2711.86,488.14,3200.00, 2, 'Av. los rosas 200',           17),
+('2026-06-06 14:00:00',21, 1, 'YAPE-R03',  800.00, 10.00, 686.44,123.56, 810.00, 2, 'Av. los rosas 200',           17),
+('2026-06-06 15:00:00',21, 2, 'YAPE-R04', 1600.00,  0.00,1355.93,244.07,1600.00, 2, 'Av. los rosas 200',           17),
+('2026-06-06 16:00:00',22, 1, 'YAPE-J01', 1600.00,  0.00,1355.93,244.07,1600.00, 2, 'Av. los mas 100',             19),
+('2026-06-07 09:00:00',22, 2, 'YAPE-J02',  800.00, 10.00, 686.44,123.56, 810.00, 2, 'Av. los mas 100',             19),
+('2026-06-09 23:00:00', 2, 1, '888',      1200.00,  0.00,1016.95,183.05,1200.00, 1, 'Jr. Caminos del Inca 450',   39),
+('2026-06-10 00:29:00', 2, 1, '888',      1200.00,  0.00,1016.95,183.05,1200.00, 2, 'Jr. Caminos del Inca 450',   39);
+
+-- =============================================================================
+-- DETALLE DE BOLETAS
+-- =============================================================================
+
+INSERT INTO tb_boleta_det (idboleta, idproducto, cantidad, preciovta, importe, talla) VALUES
+(1001, 1, 1, 150.00, 150.00, 'M'),
+(1002, 9, 1, 150.00, 150.00, '41'),
+(1003, 11, 1, 50.00, 50.00, NULL),
+(1004, 11, 1, 50.00, 50.00, NULL),
+(1005, 1, 1, 150.00, 150.00, 'L'),
+(1005, 6, 1, 120.00, 120.00, '42'),
+(1006, 14, 1, 65.00, 65.00, NULL),
+(1007, 6, 1, 120.00, 120.00, '40'),
+(1008, 11, 1, 50.00, 50.00, NULL),
+(1008, 12, 1, 60.00, 60.00, NULL),
+(1009, 2, 1, 120.00, 120.00, 'S'),
+(1009, 12, 1, 60.00, 60.00, NULL),
+(1010, 13, 1, 55.00, 55.00, NULL),
+(1011, 7, 1, 100.00, 100.00, '43'),
+(1012, 3, 1, 180.00, 180.00, 'XL'),
+(1013, 14, 1, 65.00, 65.00, NULL),
+(1014, 5, 1, 170.00, 170.00, 'M'),
+(1015, 6, 1, 120.00, 120.00, '39'),
+(1015, 8, 1, 130.00, 130.00, '41'),
+(1016, 4, 1, 200.00, 200.00, 'L'),
+(1017, 4, 1, 200.00, 200.00, 'XL'),
+(1018, 8, 1, 130.00, 130.00, '40'),
+(1019, 1, 1, 150.00, 150.00, 'M'),
+(1019, 7, 1, 100.00, 100.00, '42'),
+(1019, 11, 1, 50.00, 50.00, NULL),
+(1020, 3, 1, 180.00, 180.00, 'L'),
+(1021, 7, 1, 100.00, 100.00, '41'),
+(1022, 4, 1, 200.00, 200.00, 'M'),
+(1023, 2, 1, 120.00, 120.00, 'S'),
+(1024, 2, 1, 120.00, 120.00, 'XL'),
+(1024, 12, 1, 60.00, 60.00, NULL),
+(1025, 3, 1, 180.00, 180.00, 'L'),
+(1025, 8, 1, 130.00, 130.00, '43'),
+(1025, 13, 1, 55.00, 55.00, NULL),
+(1025, 15, 1, 58.00, 58.00, NULL),
+(1026, 8, 1, 130.00, 130.00, '40'),
+(1026, 13, 1, 55.00, 55.00, NULL),
+(1027, 6, 1, 120.00, 120.00, '42'),
+(1028, 9, 1, 150.00, 150.00, '41'),
+(1028, 14, 1, 65.00, 65.00, NULL),
+(1028, 12, 1, 60.00, 60.00, NULL),
+(1029, 10, 1, 140.00, 140.00, '39'),
+(1029, 4, 1, 200.00, 200.00, 'M'),
+(1030, 5, 2, 170.00, 340.00, 'XL'),
+(1031, 11, 1, 50.00, 50.00, NULL),
+(1031, 13, 1, 55.00, 55.00, NULL),
+(1031, 14, 1, 65.00, 65.00, NULL),
+(1032, 8, 1, 130.00, 130.00, '40'),
+(1032, 1, 1, 150.00, 150.00, 'L'),
+(1033, 9, 1, 150.00, 150.00, '42'),
+(1033, 2, 1, 120.00, 120.00, 'M'),
+(1033, 12, 1, 60.00, 60.00, NULL),
+(1034, 1, 1, 150.00, 150.00, 'S'),
+(1035, 15, 1, 58.00, 58.00, NULL),
+(1036, 5, 1, 170.00, 170.00, 'L'),
+(1037, 11, 1, 50.00, 50.00, NULL),
+(1037, 12, 1, 60.00, 60.00, NULL),
+(1038, 5, 1, 170.00, 170.00, 'M'),
+(1039, 9, 1, 150.00, 150.00, '41'),
+(1040, 15, 1, 58.00, 58.00, NULL),
+(1041, 1, 1, 150.00, 150.00, 'XL'),
+(1042, 3, 8, 180.00, 1440.00, 'L'),
+(1042, 4, 4, 200.00, 800.00, 'M'),
+(1042, 1, 6, 150.00, 900.00, 'S'),
+(1043, 3, 8, 180.00, 1440.00, 'XL'),
+(1043, 4, 4, 200.00, 800.00, 'L'),
+(1043, 1, 6, 150.00, 900.00, 'M'),
+(1044, 8, 4, 130.00, 520.00, '40'),
+(1044, 9, 2, 150.00, 300.00, '42'),
+(1045, 3, 4, 180.00, 720.00, 'L'),
+(1045, 4, 4, 200.00, 800.00, 'XL'),
+(1045, 1, 2, 150.00, 300.00, 'M'),
+(1045, 13, 1, 55.00, 55.00, NULL),
+(1045, 14, 1, 65.00, 65.00, NULL),
+(1045, 15, 1, 58.00, 58.00, NULL),
+(1046, 3, 4, 180.00, 720.00, 'M'),
+(1046, 4, 4, 200.00, 800.00, 'L'),
+(1046, 1, 2, 150.00, 300.00, 'S'),
+(1046, 13, 1, 55.00, 55.00, NULL),
+(1046, 14, 1, 65.00, 65.00, NULL),
+(1046, 15, 1, 58.00, 58.00, NULL),
+(1047, 8, 4, 130.00, 520.00, '41'),
+(1047, 9, 4, 150.00, 600.00, '40'),
+(1047, 10, 1, 140.00, 140.00, '43'),
+(1047, 15, 1, 58.00, 58.00, NULL),
+(1047, 14, 1, 65.00, 65.00, NULL),
+(1047, 13, 1, 55.00, 55.00, NULL),
+(1048, 1, 1, 150.00, 150.00, 'M'),
+(1049, 3, 1, 180.00, 180.00, 'L');
+
+SELECT CONCAT('✓ Base de datos creada correctamente. ',
+              'Tablas: ', (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'bd_machomen'), ' | ',
+              'Usuarios: ', (SELECT COUNT(*) FROM tb_usuario), ' | ',
+              'Productos: ', (SELECT COUNT(*) FROM tb_producto), ' | ',
+              'Boletas: ', (SELECT COUNT(*) FROM tb_boleta), ' | ',
+              'Detalles: ', (SELECT COUNT(*) FROM tb_boleta_det), ' | ',
+              'Cupones: ', (SELECT COUNT(*) FROM tb_cupon)
+             ) AS resultado;

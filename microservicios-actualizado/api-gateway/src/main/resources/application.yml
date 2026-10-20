@@ -1,0 +1,78 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowCredentials: true
+      routes:
+        # ── ms-auth (PUBLICO — sin filtro JWT) ───────────────────
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/auth/**
+
+        # ── ms-usuarios (PROTEGIDO) ───────────────────────────────
+        - id: ms-usuarios
+          uri: lb://ms-usuarios
+          predicates:
+            - Path=/api/usuarios/**
+          filters:
+            - name: JwtAuthFilter
+
+        # ── ms-productos (PUBLICO lectura, PROTEGIDO escritura) ───
+        - id: ms-productos
+          uri: lb://ms-productos
+          predicates:
+            - Path=/api/productos/**, /api/categorias/**, /api/distritos/**, /api/cupones/**
+
+        # ── ms-boletas (PROTEGIDO) ────────────────────────────────
+        - id: ms-boletas
+          uri: lb://ms-boletas
+          predicates:
+            - Path=/api/boletas/**, /api/dashboard/**
+          filters:
+            - name: JwtAuthFilter
+
+        # ── ms-notificaciones ─────────────────────────────────────
+        - id: ms-notificaciones
+          uri: lb://ms-notificaciones
+          predicates:
+            - Path=/api/notificaciones/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Clave JWT compartida — misma en todos los microservicios
+jwt:
+  secret: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.machomen.gateway: DEBUG

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: machomen-config
+  namespace: machomen
+data:
+  MYSQL_DATABASE: bd_machomen
+  MYSQL_HOST: machomen-mysql
+  MYSQL_PORT: "3306"
+  RABBITMQ_HOST: machomen-rabbitmq
+  RABBITMQ_PORT: "5672"
+  EUREKA_URL: http://machomen-eureka:8761/eureka/
+  JWT_SECRET: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+  JWT_EXPIRATION: "86400000"

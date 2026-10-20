@@ -1,0 +1,15 @@
+# Profile: docker
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://machomen-eureka:8761/eureka/}
+jwt:
+  secret: ${JWT_SECRET:MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,200 @@
+
+# ══════════════════════════════════════════════════════════════
+#  MachoMen Microservicios — Docker Compose
+#
+#  Orden de arranque:
+#    mysql + rabbitmq → eureka-server → ms-auth, ms-productos,
+#    ms-usuarios → ms-boletas → ms-notificaciones → api-gateway
+#
+#  Comandos:
+#    docker-compose up -d          # levantar todo en background
+#    docker-compose logs -f        # ver logs
+#    docker-compose down -v        # bajar y limpiar volúmenes
+# ══════════════════════════════════════════════════════════════
+
+services:
+
+  # ── Infraestructura ──────────────────────────────────────────
+
+  mysql:
+    image: mysql:8.0
+    container_name: machomen-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: bd_machomen
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - machomen-net
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: machomen-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI → http://localhost:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - machomen-net
+
+  # ── Spring Cloud ─────────────────────────────────────────────
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: machomen-eureka
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - machomen-net
+
+  # ── Microservicios ───────────────────────────────────────────
+
+  ms-auth:
+    build: ./ms-auth
+    container_name: machomen-auth
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_machomen?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - machomen-net
+
+  ms-productos:
+    build: ./ms-productos
+    container_name: machomen-productos
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_machomen?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - machomen-net
+
+  ms-usuarios:
+    build: ./ms-usuarios
+    container_name: machomen-usuarios
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_machomen?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - machomen-net
+
+  ms-boletas:
+    build: ./ms-boletas
+    container_name: machomen-boletas
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_machomen?useSSL=false&serverTimezone=America/Lima&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      ms-productos:
+        condition: service_started
+    networks:
+      - machomen-net
+
+  ms-notificaciones:
+    build: ./ms-notificaciones
+    container_name: machomen-notificaciones
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - machomen-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: machomen-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: MachoMen2025SuperSecretKeyForJWTHS256Min32Chars!!
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - machomen-net
+
+# ── Volúmenes y Red ──────────────────────────────────────────
+
+volumes:
+  mysql_data:
+  rabbitmq_data:
+
+networks:
+  machomen-net:
+    driver: bridge
